@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Water Step Calculator | Body Corp</title>
+<title>Water Step Calculator | Ideal Prepaid</title>
 <meta name="description" content="Convert a Rand purchase into kilolitres of water using Ideal Prepaid's stepped tariff table.">
 <meta name="theme-color" content="#0B4F6C">
 <link rel="manifest" href="manifest.json">
@@ -316,6 +316,50 @@
     line-height:1.5;
   }
 
+  #compareCard{
+    border:1.5px dashed var(--line);
+  }
+  .compare-summary{
+    font-size:14px;
+    line-height:1.55;
+    color:var(--ink);
+    background:var(--aqua-soft);
+    border-radius:10px;
+    padding:12px 14px;
+    margin:0 0 16px;
+  }
+  .compare-summary b{color:var(--ocean);}
+
+  table.compare-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13.5px;
+  }
+  table.compare-table th{
+    text-align:right;
+    font-size:11px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    padding:0 6px 8px;
+    font-weight:700;
+  }
+  table.compare-table th:first-child{text-align:left;}
+  table.compare-table td{
+    padding:9px 6px;
+    border-top:1px solid var(--line);
+    font-variant-numeric:tabular-nums;
+  }
+  table.compare-table td.cmp-label{color:var(--ink-soft);}
+  table.compare-table tr.cmp-net td{font-weight:700; color:var(--ink);}
+  table.compare-table tfoot td{
+    padding:10px 6px 2px;
+    border-top:2px solid var(--ink);
+    font-weight:800;
+  }
+  .delta-pos{color:var(--free-ink);}
+  .delta-zero{color:var(--ink-soft);}
+
   .reset-link{
     display:block;
     text-align:center;
@@ -371,6 +415,14 @@
     .result-grid .card{
       margin-bottom:0;
       height:100%;
+    }
+
+    #compareCard{
+      max-width:none;
+    }
+    table.step-compare th, table.step-compare td{
+      padding-left:10px;
+      padding-right:10px;
     }
   }
 </style>
@@ -452,6 +504,59 @@
       </div>
     </div>
 
+    <div class="card" id="compareCard">
+      <p class="section-heading">Where the difference comes from &mdash; Card vs EFT</p>
+      <p class="compare-summary" id="compareSummary"></p>
+
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="num">Card</th>
+            <th class="num">EFT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="cmp-label">Admin fee (6%)</td>
+            <td class="num" id="cmpAdminCard"></td>
+            <td class="num" id="cmpAdminEft"></td>
+          </tr>
+          <tr>
+            <td class="cmp-label">Transaction fee</td>
+            <td class="num" id="cmpTxCard"></td>
+            <td class="num" id="cmpTxEft"></td>
+          </tr>
+          <tr class="cmp-net">
+            <td class="cmp-label">Value allocated to water</td>
+            <td class="num" id="cmpNetCard"></td>
+            <td class="num" id="cmpNetEft"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="section-heading" style="margin-top:18px;">Kl gained per step</p>
+      <table class="compare-table step-compare">
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th class="num">Card kl</th>
+            <th class="num">EFT kl</th>
+            <th class="num">&Delta; kl</th>
+          </tr>
+        </thead>
+        <tbody id="compareStepBody"></tbody>
+        <tfoot>
+          <tr>
+            <td>Total</td>
+            <td class="num" id="cmpTotalCard"></td>
+            <td class="num" id="cmpTotalEft"></td>
+            <td class="num" id="cmpTotalDelta"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
     <button class="reset-link" id="resetBtn">Start a new calculation</button>
   </div>
 
@@ -529,25 +634,11 @@
   }
   amountInput.addEventListener("input", validate);
 
-  function runCalculation(){
-    const amount = parseFloat(amountInput.value);
-    if(!(amount > 0)) return;
-
-    const cfg = CHANNELS[channel];
+  function calcForChannel(amount, chKey){
+    const cfg = CHANNELS[chKey];
     const adminFee = amount * cfg.adminPct;
     const txFee = amount * cfg.txPct;
     const net = amount - adminFee - txFee;
-
-    document.getElementById("feeAmount").textContent = fmtR(amount);
-    document.getElementById("feeAdmin").textContent = "\u2212" + fmtR(adminFee);
-    document.getElementById("feeNet").textContent = fmtR(net);
-
-    if(cfg.txPct > 0){
-      feeTxRow.style.display = "flex";
-      document.getElementById("feeTx").textContent = "\u2212" + fmtR(txFee);
-    } else {
-      feeTxRow.style.display = "none";
-    }
 
     let remaining = net;
     let totalKl = 0;
@@ -583,13 +674,30 @@
       rows.push({step, klGiven, cost});
     });
 
-    document.getElementById("headlineKl").innerHTML = fmtKl(totalKl) + "<small>kl</small>";
+    return {cfg, adminFee, txFee, net, rows, totalKl};
+  }
+
+  function renderPrimary(amount, calc){
+    const cfg = calc.cfg;
+
+    document.getElementById("feeAmount").textContent = fmtR(amount);
+    document.getElementById("feeAdmin").textContent = "\u2212" + fmtR(calc.adminFee);
+    document.getElementById("feeNet").textContent = fmtR(calc.net);
+
+    if(cfg.txPct > 0){
+      feeTxRow.style.display = "flex";
+      document.getElementById("feeTx").textContent = "\u2212" + fmtR(calc.txFee);
+    } else {
+      feeTxRow.style.display = "none";
+    }
+
+    document.getElementById("headlineKl").innerHTML = fmtKl(calc.totalKl) + "<small>kl</small>";
     document.getElementById("headlineCaption").textContent =
-      fmtR(amount) + " via " + cfg.label + " \u2192 " + fmtR(net) + " allocated to water";
+      fmtR(amount) + " via " + cfg.label + " \u2192 " + fmtR(calc.net) + " allocated to water";
 
     const tbody = document.getElementById("stepBody");
     tbody.innerHTML = "";
-    rows.forEach(r => {
+    calc.rows.forEach(r => {
       const tr = document.createElement("tr");
       const isFree = r.step.rate === 0;
       const isZero = !isFree && r.klGiven === 0;
@@ -597,7 +705,6 @@
       if(isZero) tr.className = "zero";
 
       const rateLabel = r.step.rate === 0 ? "Free" : fmtR(r.step.rate);
-      const widthLabel = r.step.width === Infinity ? "" : "";
 
       tr.innerHTML =
         '<td><span class="step-name">Step ' + r.step.n + (isFree ? '<span class="free-tag">Free</span>' : '') + '</span>' +
@@ -608,7 +715,69 @@
       tbody.appendChild(tr);
     });
 
-    document.getElementById("stepTotal").textContent = fmtKl(totalKl);
+    document.getElementById("stepTotal").textContent = fmtKl(calc.totalKl);
+  }
+
+  function renderComparison(amount, cardCalc, eftCalc){
+    const deltaTotal = eftCalc.totalKl - cardCalc.totalKl;
+    const txSaved = cardCalc.txFee; // EFT's tx fee is always 0
+    const pct = cardCalc.totalKl > 0 ? (deltaTotal / cardCalc.totalKl) * 100 : 0;
+
+    document.getElementById("compareSummary").innerHTML =
+      "For the same " + fmtR(amount) + ", <b>EFT gives " + fmtKl(Math.abs(deltaTotal)) + " kl " +
+      (deltaTotal >= 0 ? "more" : "less") + "</b> than Card (" +
+      (pct >= 0 ? "+" : "") + pct.toFixed(1) + "%). " +
+      "Card's 4% transaction fee alone removes " + fmtR(txSaved) + " from the value before it ever reaches the tariff table \u2014 " +
+      "the rest of the gap comes from EFT's per-kl rates being slightly lower in most steps.";
+
+    document.getElementById("cmpAdminCard").textContent = "\u2212" + fmtR(cardCalc.adminFee);
+    document.getElementById("cmpAdminEft").textContent = "\u2212" + fmtR(eftCalc.adminFee);
+    document.getElementById("cmpTxCard").textContent = "\u2212" + fmtR(cardCalc.txFee);
+    document.getElementById("cmpTxEft").textContent = eftCalc.txFee > 0 ? "\u2212" + fmtR(eftCalc.txFee) : "None";
+    document.getElementById("cmpNetCard").textContent = fmtR(cardCalc.net);
+    document.getElementById("cmpNetEft").textContent = fmtR(eftCalc.net);
+
+    const tbody = document.getElementById("compareStepBody");
+    tbody.innerHTML = "";
+    cardCalc.rows.forEach((cardRow, i) => {
+      const eftRow = eftCalc.rows[i];
+      const d = eftRow.klGiven - cardRow.klGiven;
+      const tr = document.createElement("tr");
+      const isFree = cardRow.step.rate === 0;
+      if(isFree) tr.className = "free-row";
+
+      let deltaClass = "delta-zero";
+      let deltaLabel = "0.00";
+      if(Math.abs(d) > 0.001){
+        deltaClass = "delta-pos";
+        deltaLabel = (d > 0 ? "+" : "\u2212") + fmtKl(Math.abs(d));
+      }
+
+      tr.innerHTML =
+        '<td><span class="step-name">Step ' + cardRow.step.n + (isFree ? '<span class="free-tag">Free</span>' : '') + '</span>' +
+        '<span class="step-range">' + cardRow.step.range + '</span></td>' +
+        '<td class="num">' + fmtKl(cardRow.klGiven) + '</td>' +
+        '<td class="num">' + fmtKl(eftRow.klGiven) + '</td>' +
+        '<td class="num ' + deltaClass + '">' + deltaLabel + '</td>';
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById("cmpTotalCard").textContent = fmtKl(cardCalc.totalKl);
+    document.getElementById("cmpTotalEft").textContent = fmtKl(eftCalc.totalKl);
+    document.getElementById("cmpTotalDelta").textContent =
+      (deltaTotal >= 0 ? "+" : "\u2212") + fmtKl(Math.abs(deltaTotal));
+  }
+
+  function runCalculation(){
+    const amount = parseFloat(amountInput.value);
+    if(!(amount > 0)) return;
+
+    const cardCalc = calcForChannel(amount, "card");
+    const eftCalc = calcForChannel(amount, "eft");
+    const primaryCalc = channel === "card" ? cardCalc : eftCalc;
+
+    renderPrimary(amount, primaryCalc);
+    renderComparison(amount, cardCalc, eftCalc);
 
     resultSection.style.display = "block";
     resultSection.scrollIntoView({behavior:"smooth", block:"start"});
