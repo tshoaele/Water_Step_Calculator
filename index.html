@@ -459,7 +459,7 @@
         <div class="field" style="flex: 0 0 auto;">
           <label class="field-label">Channel</label>
           <div class="channel-toggle" id="single-channel">
-            <button data-channel="card" class="active">Card / App / Web</button>
+            <button data-channel="card" class="active">Card / Bank App / Web</button>
             <button data-channel="eft">EFT</button>
           </div>
         </div>
@@ -499,7 +499,7 @@
         <div class="field" style="flex: 0 0 auto;">
           <label class="field-label">Channel</label>
           <div class="channel-toggle" id="month-channel">
-            <button data-channel="card" class="active">Card / App / Web</button>
+            <button data-channel="card" class="active">Card / Bank App / Web</button>
             <button data-channel="eft">EFT</button>
           </div>
         </div>
@@ -638,12 +638,12 @@
   function renderFeeTable(el, fees, channel){
     const rows = [
       ['Token amount', fmtR(fees.amount)],
-      ['Admin fee (6%)', '&minus; ' + fmtR(fees.admin)],
-      ['VAT (Excise) on admin, 15%', '&minus; ' + fmtR(fees.vat)]
+      ['Admin fee (6%)', '&minus; ' + fmtR(fees.admin)]
     ];
     if(channel === 'card'){
       rows.push(['Transaction fee (4%)', '&minus; ' + fmtR(fees.transFee)]);
     }
+    rows.push(['VAT (Excise) 15%', '&minus; ' + fmtR(fees.vat)]);
     rows.push(['Value allocated to utility', fmtR(fees.net)]);
     el.innerHTML = rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
   }
@@ -705,7 +705,7 @@
     const compareEl = document.getElementById('single-compare');
     compareEl.innerHTML = `
       <div class="compare-col">
-        <h3>Card / App / Web</h3>
+        <h3>Card / Bank App / Web</h3>
         <p class="kl-mini">${fmtKl(cardResult.kl)}</p>
         <table class="fee-table" id="cmp-card-table"></table>
       </div>
