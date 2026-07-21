@@ -4,1220 +4,871 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Water Step Calculator | Ideal Prepaid</title>
-<meta name="description" content="Convert a Rand purchase into kilolitres of water using Ideal Prepaid's stepped tariff table.">
-<meta name="theme-color" content="#0B4F6C">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Water Calc">
-
+<meta name="theme-color" content="#2C6E6B">
+<meta name="description" content="Convert a Rand token purchase into kilolitres of water using the tiered step tariff.">
+<link id="manifest-link" rel="manifest">
+<link id="apple-icon" rel="apple-touch-icon">
+<link id="favicon" rel="icon" type="image/svg+xml">
 <style>
   :root{
-    --ocean:#0B4F6C;
-    --ocean-deep:#083A50;
-    --aqua:#17A9A0;
-    --aqua-soft:#E4F5F3;
-    --sand:#F5F8FA;
-    --paper:#FFFFFF;
-    --ink:#0F2733;
-    --ink-soft:#5B7480;
-    --line:#DCE6EA;
-    --free:#E4F3E7;
-    --free-ink:#1E7A3C;
-    --warn:#B4451F;
-    --radius:14px;
-    --radius-lg:20px;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:var(--sand);
-    color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    min-height:100vh;
-    padding-bottom:48px;
-    -webkit-font-smoothing:antialiased;
-  }
-  .wrap{
-    max-width:560px;
-    margin:0 auto;
-    padding:0 18px;
-  }
-  header.app-header{
-    background:linear-gradient(160deg, var(--ocean) 0%, var(--ocean-deep) 100%);
-    color:#fff;
-    padding:28px 18px 34px;
-    border-radius:0 0 28px 28px;
-    position:relative;
-    overflow:hidden;
-  }
-  header.app-header::after{
-    content:"";
-    position:absolute;
-    right:-40px; top:-40px;
-    width:180px; height:180px;
-    border-radius:50%;
-    background:rgba(255,255,255,0.06);
-  }
-  .brand-row{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-size:13px;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    color:rgba(255,255,255,0.75);
-    margin-bottom:14px;
-  }
-  .drop{
-    width:18px;height:18px;flex:none;
-    background:var(--aqua);
-    border-radius:60% 60% 60% 0;
-    transform:rotate(45deg);
-  }
-  h1{
-    font-size:26px;
-    line-height:1.25;
-    margin:0 0 6px;
-    font-weight:700;
-    letter-spacing:-0.01em;
-  }
-  .subtitle{
-    font-size:14.5px;
-    color:rgba(255,255,255,0.82);
-    margin:0;
-    max-width:44ch;
+    --bg: #FAFAF7;
+    --surface: #FFFFFF;
+    --surface-tint: #F2F7F6;
+    --border: rgba(20, 30, 29, 0.09);
+    --border-strong: rgba(20, 30, 29, 0.16);
+    --ink: #1F2B2A;
+    --ink-soft: #56645F;
+    --ink-faint: #8B9793;
+    --teal: #2C6E6B;
+    --teal-deep: #1D4E4C;
+    --teal-tint: #E7F2F1;
+    --clay: #C65D4B;
+    --shadow-sm: 0 1px 2px rgba(20,30,29,0.04);
+    --shadow-md: 0 6px 20px -8px rgba(20,30,29,0.14);
+    --radius: 12px;
+    --radius-lg: 16px;
+    --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    --s1: #A9D9CC;
+    --s2: #6EC0B4;
+    --s3: #4CA79C;
+    --s4: #2C7A73;
+    --s5: #EAC873;
+    --s6: #E0A25B;
+    --s7: #D3814F;
+    --s8: #C15C48;
   }
 
-  main{margin-top:-18px;}
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body{
+    padding-bottom: 48px;
+  }
+
+  a{ color: var(--teal); }
+
+  .wrap{
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  header.top{
+    padding: 34px 0 22px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+  }
+
+  .eyebrow{
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    margin: 0 0 10px;
+    font-weight: 600;
+  }
+
+  h1{
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(26px, 4vw, 34px);
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .sub{
+    color: var(--ink-soft);
+    font-size: 15px;
+    max-width: 62ch;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .a2hs{
+    display: none;
+    margin-top: 16px;
+    padding: 10px 14px;
+    background: var(--teal-tint);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 13px;
+    color: var(--teal-deep);
+  }
+  .a2hs.show{ display: block; }
+
+  nav.tabs{
+    display: flex;
+    gap: 6px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab-btn{
+    appearance: none;
+    background: none;
+    border: none;
+    font-family: var(--sans);
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    padding: 10px 4px 14px;
+    margin-right: 22px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transform: translateY(1px);
+  }
+  .tab-btn.active{
+    color: var(--teal-deep);
+    border-bottom-color: var(--teal);
+  }
+  .tab-btn:focus-visible{
+    outline: 2px solid var(--teal);
+    outline-offset: 3px;
+  }
+
+  .panel{ display: none; }
+  .panel.active{ display: block; }
 
   .card{
-    background:var(--paper);
-    border-radius:var(--radius-lg);
-    box-shadow:0 1px 2px rgba(15,39,51,0.04), 0 8px 24px rgba(15,39,51,0.06);
-    padding:20px;
-    margin-bottom:16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 22px 24px;
   }
 
-  /* Mobile default: the two result cards simply stack, each full width. */
-  .result-grid{
-    display:block;
+  .card + .card{ margin-top: 18px; }
+
+  .grid-2{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
   }
-  .result-grid .card{
-    margin-bottom:16px;
+  @media (min-width: 880px){
+    .grid-2{ grid-template-columns: 1fr 1fr; align-items: start; }
+  }
+
+  .field-row{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-end;
+  }
+
+  .field{
+    flex: 1 1 200px;
   }
 
   label.field-label{
-    display:block;
-    font-size:12.5px;
-    font-weight:700;
-    letter-spacing:.04em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin-bottom:8px;
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    font-weight: 600;
+    margin-bottom: 7px;
   }
 
-  .amount-input-row{
-    display:flex;
-    align-items:center;
-    background:var(--sand);
-    border:1.5px solid var(--line);
-    border-radius:var(--radius);
-    padding:2px 4px 2px 16px;
-    transition:border-color .15s ease;
+  input[type="number"]{
+    width: 100%;
+    font-family: var(--sans);
+    font-size: 17px;
+    padding: 11px 13px;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg);
+    color: var(--ink);
   }
-  .amount-input-row:focus-within{
-    border-color:var(--aqua);
-    background:#fff;
-  }
-  .rand-sign{
-    font-size:22px;
-    font-weight:700;
-    color:var(--ink-soft);
-    margin-right:6px;
-  }
-  input#amount{
-    flex:1;
-    border:none;
-    background:transparent;
-    font-size:26px;
-    font-weight:700;
-    padding:12px 8px;
-    color:var(--ink);
-    font-variant-numeric:tabular-nums;
-    min-width:0;
-  }
-  input#amount:focus{outline:none;}
-  input#amount::placeholder{color:#B7C4CA; font-weight:600;}
-
-  .channel-group{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-  }
-  .channel-btn{
-    border:1.5px solid var(--line);
-    background:var(--sand);
-    border-radius:var(--radius);
-    padding:14px 12px;
-    text-align:left;
-    cursor:pointer;
-    font-family:inherit;
-    color:var(--ink);
-    transition:border-color .15s ease, background .15s ease;
-  }
-  .channel-btn:hover{border-color:#B9CDD4;}
-  .channel-btn.active{
-    border-color:var(--ocean);
-    background:var(--aqua-soft);
-  }
-  .channel-btn .ct-title{
-    font-size:14.5px;
-    font-weight:700;
-    display:block;
-    margin-bottom:3px;
-  }
-  .channel-btn .ct-sub{
-    font-size:12px;
-    color:var(--ink-soft);
-    display:block;
-    line-height:1.4;
+  input[type="number"]:focus-visible{
+    outline: 2px solid var(--teal);
+    outline-offset: 1px;
+    border-color: var(--teal);
   }
 
-  button#calcBtn{
-    width:100%;
-    margin-top:18px;
-    background:var(--ocean);
-    color:#fff;
-    border:none;
-    border-radius:var(--radius);
-    padding:16px;
-    font-size:16px;
-    font-weight:700;
-    letter-spacing:.01em;
-    cursor:pointer;
-    font-family:inherit;
-    transition:background .15s ease, transform .1s ease;
+  .channel-toggle{
+    display: inline-flex;
+    background: var(--surface-tint);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
   }
-  button#calcBtn:active{transform:scale(0.98);}
-  button#calcBtn:hover{background:var(--ocean-deep);}
-  button#calcBtn:disabled{
-    background:#B7C4CA;
-    cursor:not-allowed;
+  .channel-toggle button{
+    appearance: none;
+    border: none;
+    background: none;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .channel-toggle button.active{
+    background: var(--teal);
+    color: #fff;
+  }
+  .channel-toggle button:focus-visible{
+    outline: 2px solid var(--teal-deep);
+    outline-offset: 2px;
   }
 
-  #resultSection{display:none;}
-
-  .headline-result{
-    text-align:center;
-    padding:8px 0 4px;
+  .btn-primary{
+    appearance: none;
+    border: none;
+    background: var(--teal);
+    color: #fff;
+    font-family: var(--sans);
+    font-size: 14.5px;
+    font-weight: 600;
+    padding: 12px 22px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
   }
+  .btn-primary:hover{ background: var(--teal-deep); }
+  .btn-primary:focus-visible{ outline: 2px solid var(--teal-deep); outline-offset: 2px; }
+
+  .btn-ghost{
+    appearance: none;
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--ink-soft);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .btn-ghost:hover{ border-color: var(--teal); color: var(--teal-deep); }
+
   .headline-kl{
-    font-size:44px;
-    font-weight:800;
-    color:var(--ocean);
-    line-height:1;
-    letter-spacing:-0.02em;
+    font-family: var(--serif);
+    font-size: clamp(40px, 7vw, 58px);
+    line-height: 1;
+    color: var(--teal-deep);
+    margin: 2px 0 2px;
   }
-  .headline-kl small{
-    font-size:20px;
-    font-weight:700;
-    color:var(--ink-soft);
-    margin-left:4px;
-  }
-  .headline-caption{
-    font-size:13px;
-    color:var(--ink-soft);
-    margin-top:8px;
+  .headline-label{
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--ink-faint);
+    font-weight: 600;
   }
 
-  .fee-list{
-    list-style:none;
-    margin:16px 0 0;
-    padding:0;
-    border-top:1px solid var(--line);
+  table.fee-table, table.step-table, table.month-table{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 6px;
   }
-  .fee-list li{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    padding:11px 0;
-    border-bottom:1px solid var(--line);
-    font-size:14.5px;
+  table.fee-table td, table.fee-table th,
+  table.step-table td, table.step-table th,
+  table.month-table td, table.month-table th{
+    padding: 9px 8px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
   }
-  .fee-list li .fl-label{color:var(--ink-soft);}
-  .fee-list li .fl-val{font-weight:700; font-variant-numeric:tabular-nums;}
-  .fee-list li.deduction .fl-val{color:var(--warn);}
-  .fee-list li.net .fl-label{color:var(--ink); font-weight:700;}
-  .fee-list li.net .fl-val{color:var(--ocean); font-size:16px;}
-
-  .section-heading{
-    font-size:12.5px;
-    font-weight:700;
-    letter-spacing:.04em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin:0 0 12px;
+  table.fee-table th, table.step-table th, table.month-table th{
+    text-align: right;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-strong);
   }
-
-  table.step-table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:13.5px;
+  table.fee-table td:first-child, table.fee-table th:first-child,
+  table.step-table td:first-child, table.step-table th:first-child,
+  table.month-table td:first-child, table.month-table th:first-child{
+    text-align: left;
   }
-  table.step-table th{
-    text-align:left;
-    font-size:11px;
-    letter-spacing:.03em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    padding:0 6px 8px;
-    font-weight:700;
+  table.fee-table tr:last-child td{
+    border-bottom: none;
+    font-weight: 700;
+    color: var(--teal-deep);
   }
-  table.step-table th.num, table.step-table td.num{text-align:right;}
-  table.step-table td{
-    padding:9px 6px;
-    border-top:1px solid var(--line);
-    font-variant-numeric:tabular-nums;
-    vertical-align:middle;
-  }
-  table.step-table tr.free-row td{background:var(--free);}
-  table.step-table tr.free-row td:first-child{border-radius:8px 0 0 8px;}
-  table.step-table tr.free-row td:last-child{border-radius:0 8px 8px 0;}
-  table.step-table tr.zero td{color:#B7C4CA;}
-  .step-name{font-weight:700;}
-  .step-range{color:var(--ink-soft); font-size:12px; display:block;}
-  .free-tag{
-    display:inline-block;
-    font-size:10.5px;
-    font-weight:700;
-    letter-spacing:.03em;
-    text-transform:uppercase;
-    background:var(--free-ink);
-    color:#fff;
-    padding:2px 7px;
-    border-radius:20px;
-    margin-left:6px;
-    vertical-align:middle;
-  }
-  tfoot td{
-    padding:12px 6px 4px;
-    border-top:2px solid var(--ink);
-    font-weight:800;
-    font-size:14.5px;
+  table.step-table tr:last-child td, table.month-table tr:last-child td{
+    border-bottom: none;
   }
 
-  .rate-note{
-    font-size:12px;
-    color:var(--ink-soft);
-    margin-top:14px;
-    line-height:1.5;
+  .section-title{
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    margin: 0 0 12px;
   }
 
-  #compareCard{
-    border:1.5px dashed var(--line);
+  .compare-grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
-  .compare-summary{
-    font-size:14px;
-    line-height:1.55;
-    color:var(--ink);
-    background:var(--aqua-soft);
-    border-radius:10px;
-    padding:12px 14px;
-    margin:0 0 16px;
-  }
-  .compare-summary b{color:var(--ocean);}
-
-  table.compare-table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:13.5px;
-  }
-  table.compare-table th{
-    text-align:right;
-    font-size:11px;
-    letter-spacing:.03em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    padding:0 6px 8px;
-    font-weight:700;
-  }
-  table.compare-table th:first-child{text-align:left;}
-  table.compare-table td{
-    padding:9px 6px;
-    border-top:1px solid var(--line);
-    font-variant-numeric:tabular-nums;
-  }
-  table.compare-table td.cmp-label{color:var(--ink-soft);}
-  table.compare-table tr.cmp-net td{font-weight:700; color:var(--ink);}
-  table.compare-table tfoot td{
-    padding:10px 6px 2px;
-    border-top:2px solid var(--ink);
-    font-weight:800;
-  }
-  .delta-pos{color:var(--free-ink);}
-  .delta-zero{color:var(--ink-soft);}
-
-  .reset-link{
-    display:block;
-    text-align:center;
-    margin-top:6px;
-    color:var(--ink-soft);
-    font-size:13.5px;
-    background:none;
-    border:none;
-    text-decoration:underline;
-    cursor:pointer;
-    font-family:inherit;
-    padding:10px;
-    width:100%;
+  @media (min-width: 720px){
+    .compare-grid{ grid-template-columns: 1fr 1fr; }
   }
 
-  .install-hint{
-    font-size:12.5px;
-    color:var(--ink-soft);
-    text-align:center;
-    padding:6px 24px 0;
-    line-height:1.6;
+  .compare-col h3{
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 18px;
+    margin: 0 0 4px;
+  }
+  .compare-col .kl-mini{
+    font-family: var(--serif);
+    font-size: 28px;
+    color: var(--teal-deep);
+    margin: 0 0 10px;
   }
 
-  .tab-nav{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-    margin:0 0 16px;
+  .note-box{
+    background: var(--teal-tint);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink);
+    margin-top: 16px;
   }
-  .tab-btn{
-    border:1.5px solid var(--line);
-    background:var(--paper);
-    border-radius:var(--radius);
-    padding:12px 10px;
-    text-align:center;
-    cursor:pointer;
-    font-family:inherit;
-    font-size:13.5px;
-    font-weight:700;
-    color:var(--ink-soft);
-    transition:border-color .15s ease, background .15s ease, color .15s ease;
-  }
-  .tab-btn.active{
-    border-color:var(--ocean);
-    background:var(--ocean);
-    color:#fff;
-  }
-  .tab-panel{display:none;}
-  .tab-panel.active{display:block;}
 
-  .purchase-row{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:10px;
+  .purchase-inputs{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
   }
-  .purchase-row .pr-label{
-    flex:none;
-    width:84px;
-    font-size:13.5px;
-    font-weight:700;
-    color:var(--ink);
+  @media (min-width: 720px){
+    .purchase-inputs{ grid-template-columns: repeat(3, 1fr); }
   }
-  .purchase-row .amount-input-row{flex:1;}
-  .purchase-row .amount-input-row input{font-size:17px; padding:9px 6px;}
 
-  #multiTable td, #multiTable th{font-size:12.5px;}
-  #multiTable td.step-used{color:var(--ink-soft); font-size:11.5px;}
+  .bars{
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 8px;
+  }
 
-  .bar-row{margin-bottom:16px;}
+  .bar-row{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
   .bar-label{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    font-size:13px;
-    font-weight:700;
-    margin-bottom:6px;
-  }
-  .bar-sub{
-    font-weight:600;
-    color:var(--ink-soft);
-    font-size:12.5px;
+    width: 78px;
+    flex: 0 0 78px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    font-weight: 600;
   }
   .bar-track{
-    display:flex;
-    height:24px;
-    border-radius:7px;
-    overflow:hidden;
-    background:var(--sand);
-    border:1px solid var(--line);
+    flex: 1;
+    background: var(--surface-tint);
+    border-radius: 999px;
+    height: 26px;
+    overflow: hidden;
+    display: flex;
+    border: 1px solid var(--border);
   }
-  .bar-seg{height:100%;}
-  .bar-legend{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px 16px;
-    margin-top:14px;
-    padding-top:14px;
-    border-top:1px solid var(--line);
+  .bar-seg{
+    height: 100%;
+    transition: width 0.5s ease;
   }
-  .bar-legend-item{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    font-size:12px;
-    color:var(--ink-soft);
+  .bar-kl{
+    width: 78px;
+    flex: 0 0 78px;
+    text-align: right;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
   }
-  .bar-legend-dot{
-    width:10px;height:10px;border-radius:3px;flex:none;
+
+  .legend{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-top: 14px;
+  }
+  .legend-item{
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+  .legend-swatch{
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
+    flex: 0 0 11px;
   }
 
   footer.sig{
-    text-align:center;
-    padding:22px 18px 6px;
-    font-size:11px;
-    letter-spacing:.06em;
-    text-transform:uppercase;
-    color:#B7C4CA;
+    text-align: center;
+    margin-top: 44px;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    letter-spacing: 0.03em;
   }
 
-  @media (max-width:380px){
-    .headline-kl{font-size:38px;}
-    .channel-group{grid-template-columns:1fr;}
-  }
+  .hidden{ display: none !important; }
 
-  /* Desktop / wide screens: the header and input form stay a comfortable
-     narrow width, but the result cards break out wider and sit side by
-     side instead of stacked, so there's little to no scrolling to see
-     the full breakdown. */
-  @media (min-width:760px){
-    main.wrap{ max-width:920px; }
-    header.app-header .wrap{ max-width:560px; }
-    main.wrap > .card:first-child{ max-width:560px; margin-left:auto; margin-right:auto; }
-
-    .result-grid{
-      display:grid;
-      grid-template-columns:1fr 1.35fr;
-      gap:16px;
-      align-items:start;
-    }
-    .result-grid .card{
-      margin-bottom:0;
-      height:100%;
-    }
-
-    #compareCard{
-      max-width:none;
-    }
-    table.step-compare th, table.step-compare td{
-      padding-left:10px;
-      padding-right:10px;
-    }
+  @media (prefers-reduced-motion: reduce){
+    .bar-seg{ transition: none; }
   }
 </style>
 </head>
 <body>
 
-<header class="app-header">
-  <div class="wrap">
-    <div class="brand-row"><span class="drop"></span> Body Corp &middot; Water Calculations</div>
+<div class="wrap">
+
+  <header class="top">
+    <p class="eyebrow">Water Meter Step Tariff Explained</p>
     <h1>Water Step Calculator</h1>
-    <p class="subtitle">Work out exactly how many kilolitres a customer's Rand purchase buys, after fees and the stepped tariff.</p>
-  </div>
-</header>
+    <p class="sub">Convert a Rand token purchase into kilolitres, after fees, across the eight step water tariff. Model a single purchase or a full month of top ups to see how the same amount buys less water as the free and cheap steps get used up.</p>
+    <div class="a2hs" id="a2hs">Add this to your home screen for quick access in the field. Use your browser's share or menu button and choose Add to Home Screen.</div>
+  </header>
 
-<main class="wrap">
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="single">Single Purchase</button>
+    <button class="tab-btn" data-tab="month">Same Month Purchases</button>
+  </nav>
 
-  <div class="tab-nav" id="tabNav">
-    <button type="button" class="tab-btn active" data-tab="single">Single Purchase</button>
-    <button type="button" class="tab-btn" data-tab="multi">Same-Month Purchases</button>
-  </div>
-
-  <div id="tab-single" class="tab-panel active">
-
-  <div class="card">
-    <label class="field-label" for="amount">Token amount purchased</label>
-    <div class="amount-input-row">
-      <span class="rand-sign">R</span>
-      <input type="number" id="amount" inputmode="decimal" placeholder="0.00" min="0" step="0.01">
-    </div>
-
-    <label class="field-label" style="margin-top:20px;">Purchase channel</label>
-    <div class="channel-group" id="channelGroup">
-      <button type="button" class="channel-btn active" data-channel="card">
-        <span class="ct-title">Card / App / Web</span>
-        <span class="ct-sub">Supermarket, banking app, credit card &mdash; 6% admin + 4% transaction fee</span>
-      </button>
-      <button type="button" class="channel-btn" data-channel="eft">
-        <span class="ct-title">EFT</span>
-        <span class="ct-sub">Direct into Ideal Prepaid's bank account &mdash; 6% admin fee only</span>
-      </button>
-    </div>
-
-    <button id="calcBtn" disabled>Calculate kilolitres</button>
-  </div>
-
-  <div id="resultSection">
-
+  <!-- ============ TAB 1: SINGLE PURCHASE ============ -->
+  <section class="panel active" id="panel-single">
     <div class="card">
-      <div class="headline-result">
-        <div class="headline-kl" id="headlineKl">0.00<small>kl</small></div>
-        <div class="headline-caption" id="headlineCaption"></div>
-      </div>
-    </div>
-
-    <div class="result-grid">
-      <div class="card">
-        <p class="section-heading">Fee breakdown</p>
-        <ul class="fee-list">
-          <li><span class="fl-label">Token amount</span><span class="fl-val" id="feeAmount">R0.00</span></li>
-          <li class="deduction"><span class="fl-label">Admin fee (6%)</span><span class="fl-val" id="feeAdmin">&minus;R0.00</span></li>
-          <li class="deduction"><span class="fl-label">VAT (Excise) on admin fee (15%)</span><span class="fl-val" id="feeVat">&minus;R0.00</span></li>
-          <li class="deduction" id="feeTxRow"><span class="fl-label">Transaction fee (4%)</span><span class="fl-val" id="feeTx">&minus;R0.00</span></li>
-          <li class="net"><span class="fl-label">Value allocated to utility</span><span class="fl-val" id="feeNet">R0.00</span></li>
-        </ul>
-      </div>
-
-      <div class="card">
-        <p class="section-heading">Step-by-step breakdown</p>
-        <table class="step-table">
-          <thead>
-            <tr>
-              <th>Step</th>
-              <th class="num">Rate / kl</th>
-              <th class="num">Cost used</th>
-              <th class="num">Kl received</th>
-            </tr>
-          </thead>
-          <tbody id="stepBody"></tbody>
-          <tfoot>
-            <tr>
-              <td colspan="3">Total kilolitres</td>
-              <td class="num" id="stepTotal">0.00</td>
-            </tr>
-          </tfoot>
-        </table>
-        <p class="rate-note">Free basic allocation (Step 1, 0&ndash;6 kl) is applied in full on every purchase. Remaining value fills each step in order, cheapest first, until the money runs out.</p>
-      </div>
-    </div>
-
-    <div class="card" id="compareCard">
-      <p class="section-heading">Where the difference comes from &mdash; Card vs EFT</p>
-      <p class="compare-summary" id="compareSummary"></p>
-
-      <table class="compare-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th class="num">Card</th>
-            <th class="num">EFT</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="cmp-label">Admin fee (6%)</td>
-            <td class="num" id="cmpAdminCard"></td>
-            <td class="num" id="cmpAdminEft"></td>
-          </tr>
-          <tr>
-            <td class="cmp-label">Transaction fee</td>
-            <td class="num" id="cmpTxCard"></td>
-            <td class="num" id="cmpTxEft"></td>
-          </tr>
-          <tr>
-            <td class="cmp-label">VAT (Excise) on admin fee (15%)</td>
-            <td class="num" id="cmpVatCard"></td>
-            <td class="num" id="cmpVatEft"></td>
-          </tr>
-          <tr class="cmp-net">
-            <td class="cmp-label">Value allocated to water</td>
-            <td class="num" id="cmpNetCard"></td>
-            <td class="num" id="cmpNetEft"></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p class="section-heading" style="margin-top:18px;">Kl gained per step</p>
-      <table class="compare-table step-compare">
-        <thead>
-          <tr>
-            <th>Step</th>
-            <th class="num">Card kl</th>
-            <th class="num">EFT kl</th>
-            <th class="num">&Delta; kl</th>
-          </tr>
-        </thead>
-        <tbody id="compareStepBody"></tbody>
-        <tfoot>
-          <tr>
-            <td>Total</td>
-            <td class="num" id="cmpTotalCard"></td>
-            <td class="num" id="cmpTotalEft"></td>
-            <td class="num" id="cmpTotalDelta"></td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-
-    <button class="reset-link" id="resetBtn">Start a new calculation</button>
-  </div>
-
-  <p class="install-hint" id="installHint"></p>
-
-  </div>
-
-  <div id="tab-multi" class="tab-panel">
-
-  <div class="card">
-    <label class="field-label">Purchase channel</label>
-    <div class="channel-group" id="channelGroupMulti">
-      <button type="button" class="channel-btn active" data-channel="card">
-        <span class="ct-title">Card / App / Web</span>
-        <span class="ct-sub">6% admin + 4% transaction fee, each purchase</span>
-      </button>
-      <button type="button" class="channel-btn" data-channel="eft">
-        <span class="ct-title">EFT</span>
-        <span class="ct-sub">6% admin fee only, each purchase</span>
-      </button>
-    </div>
-
-    <label class="field-label" style="margin-top:20px;">Purchases made this billing month</label>
-    <div id="purchaseInputs">
-      <div class="purchase-row">
-        <span class="pr-label">Purchase 1</span>
-        <div class="amount-input-row">
-          <span class="rand-sign">R</span>
-          <input type="number" class="multi-amount" data-index="0" inputmode="decimal" value="1000" min="0" step="0.01">
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label" for="single-amount">Rand amount</label>
+          <input type="number" id="single-amount" value="1000" min="0" step="10">
         </div>
-      </div>
-      <div class="purchase-row">
-        <span class="pr-label">Purchase 2</span>
-        <div class="amount-input-row">
-          <span class="rand-sign">R</span>
-          <input type="number" class="multi-amount" data-index="1" inputmode="decimal" value="1000" min="0" step="0.01">
+        <div class="field" style="flex: 0 0 auto;">
+          <label class="field-label">Channel</label>
+          <div class="channel-toggle" id="single-channel">
+            <button data-channel="card" class="active">Card / App / Web</button>
+            <button data-channel="eft">EFT</button>
+          </div>
         </div>
-      </div>
-      <div class="purchase-row">
-        <span class="pr-label">Purchase 3</span>
-        <div class="amount-input-row">
-          <span class="rand-sign">R</span>
-          <input type="number" class="multi-amount" data-index="2" inputmode="decimal" value="1000" min="0" step="0.01">
+        <div class="field" style="flex: 0 0 auto;">
+          <button class="btn-primary" id="single-calc">Calculate</button>
         </div>
       </div>
     </div>
 
-    <button id="calcMultiBtn">Calculate all three</button>
-  </div>
+    <div class="card" id="single-results">
+      <p class="headline-label">Total kilolitres received</p>
+      <p class="headline-kl" id="single-headline-kl">0.00 kl</p>
 
-  <div id="multiResultSection" style="display:none;">
-
-    <div class="card">
-      <p class="section-heading">Why the same Rand amount can buy less each time</p>
-      <p class="compare-summary" id="multiSummary"></p>
+      <div class="grid-2" style="margin-top: 18px;">
+        <div>
+          <p class="section-title">Fee breakdown</p>
+          <table class="fee-table" id="single-fee-table"></table>
+        </div>
+        <div>
+          <p class="section-title">Step by step</p>
+          <table class="step-table" id="single-step-table"></table>
+        </div>
+      </div>
     </div>
 
     <div class="card">
-      <p class="section-heading">Purchase-by-purchase breakdown</p>
-      <table class="step-table" id="multiTable">
-        <thead>
-          <tr>
-            <th>Purchase</th>
-            <th class="num">Net after fees</th>
-            <th class="num">Rate (R/kl)</th>
-            <th class="num">Kl this purchase</th>
-            <th class="num">Cumulative kl</th>
-          </tr>
-        </thead>
-        <tbody id="multiTableBody"></tbody>
-      </table>
+      <p class="section-title">Card vs EFT, same amount</p>
+      <div class="compare-grid" id="single-compare"></div>
+      <div class="note-box" id="single-compare-note"></div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 2: SAME MONTH PURCHASES ============ -->
+  <section class="panel" id="panel-month">
+    <div class="card">
+      <div class="field-row" style="margin-bottom: 16px;">
+        <div class="field" style="flex: 0 0 auto;">
+          <label class="field-label">Channel</label>
+          <div class="channel-toggle" id="month-channel">
+            <button data-channel="card" class="active">Card / App / Web</button>
+            <button data-channel="eft">EFT</button>
+          </div>
+        </div>
+        <div class="field" style="flex: 0 0 auto;">
+          <button class="btn-primary" id="month-calc">Calculate</button>
+        </div>
+      </div>
+      <div class="purchase-inputs">
+        <div class="field">
+          <label class="field-label" for="p1">Purchase 1</label>
+          <input type="number" id="p1" value="1000" min="0" step="10">
+        </div>
+        <div class="field">
+          <label class="field-label" for="p2">Purchase 2</label>
+          <input type="number" id="p2" value="1000" min="0" step="10">
+        </div>
+        <div class="field">
+          <label class="field-label" for="p3">Purchase 3</label>
+          <input type="number" id="p3" value="1000" min="0" step="10">
+        </div>
+      </div>
     </div>
 
     <div class="card">
-      <p class="section-heading">Kilolitres received per purchase</p>
-      <div id="multiBars"></div>
-      <div class="bar-legend" id="multiLegend"></div>
+      <p class="section-title">What happened this month</p>
+      <div class="note-box" id="month-summary"></div>
     </div>
 
-    <button class="reset-link" id="resetMultiBtn">Edit amounts</button>
-  </div>
+    <div class="card">
+      <p class="section-title">Purchase by purchase</p>
+      <table class="month-table" id="month-table"></table>
+    </div>
 
-  </div>
+    <div class="card">
+      <p class="section-title">Kilolitres received, by purchase</p>
+      <div class="bars" id="month-bars"></div>
+      <div class="legend" id="month-legend"></div>
+    </div>
+  </section>
 
-</main>
-
-<footer class="sig">Vuja Tsoaela</footer>
+  <footer class="sig">Vuja Tsoaela</footer>
+</div>
 
 <script>
 (function(){
 
-  const CHANNELS = {
-    card: {
-      label: "Card / App / Web",
-      adminPct: 0.06,
-      txPct: 0.04,
-      steps: [
-        { n:1, range:"0\u20136 kl",  width:6,        rate:0 },
-        { n:2, range:"6\u201310 kl", width:4,        rate:33.57 },
-        { n:3, range:"10\u201315 kl",width:5,        rate:35.04 },
-        { n:4, range:"15\u201320 kl",width:5,        rate:49.13 },
-        { n:5, range:"20\u201330 kl",width:10,       rate:67.91 },
-        { n:6, range:"30\u201340 kl",width:10,       rate:74.26 },
-        { n:7, range:"40\u201350 kl",width:10,       rate:93.69 },
-        { n:8, range:"50+ kl",       width:Infinity, rate:100.40 },
-      ]
-    },
-    eft: {
-      label: "EFT",
-      adminPct: 0.06,
-      txPct: 0,
-      steps: [
-        { n:1, range:"0\u20136 kl",  width:6,        rate:0 },
-        { n:2, range:"6\u201310 kl", width:4,        rate:34.32 },
-        { n:3, range:"10\u201315 kl",width:5,        rate:35.82 },
-        { n:4, range:"15\u201320 kl",width:5,        rate:50.22 },
-        { n:5, range:"20\u201330 kl",width:10,       rate:69.41 },
-        { n:6, range:"30\u201340 kl",width:10,       rate:75.91 },
-        { n:7, range:"40\u201350 kl",width:10,       rate:95.77 },
-        { n:8, range:"50+ kl",       width:Infinity, rate:102.63 },
-      ]
-    }
+  // ---------- Tariff data ----------
+  const STEPS = {
+    card: [
+      {step:1, lower:0,  upper:6,        rate:0},
+      {step:2, lower:6,  upper:10,       rate:33.57},
+      {step:3, lower:10, upper:15,       rate:35.04},
+      {step:4, lower:15, upper:20,       rate:49.13},
+      {step:5, lower:20, upper:30,       rate:67.91},
+      {step:6, lower:30, upper:40,       rate:74.26},
+      {step:7, lower:40, upper:50,       rate:93.69},
+      {step:8, lower:50, upper:Infinity, rate:100.40}
+    ],
+    eft: [
+      {step:1, lower:0,  upper:6,        rate:0},
+      {step:2, lower:6,  upper:10,       rate:34.32},
+      {step:3, lower:10, upper:15,       rate:35.82},
+      {step:4, lower:15, upper:20,       rate:50.22},
+      {step:5, lower:20, upper:30,       rate:69.41},
+      {step:6, lower:30, upper:40,       rate:75.91},
+      {step:7, lower:40, upper:50,       rate:95.77},
+      {step:8, lower:50, upper:Infinity, rate:102.63}
+    ]
   };
 
-  let channel = "card";
+  const STEP_COLORS = {1:'#A9D9CC',2:'#6EC0B4',3:'#4CA79C',4:'#2C7A73',5:'#EAC873',6:'#E0A25B',7:'#D3814F',8:'#C15C48'};
 
-  const amountInput = document.getElementById("amount");
-  const calcBtn = document.getElementById("calcBtn");
-  const channelGroup = document.getElementById("channelGroup");
-  const resultSection = document.getElementById("resultSection");
-  const resetBtn = document.getElementById("resetBtn");
-  const feeTxRow = document.getElementById("feeTxRow");
+  const STEP_LABELS = {1:'0-6 kl (free)',2:'6-10 kl',3:'10-15 kl',4:'15-20 kl',5:'20-30 kl',6:'30-40 kl',7:'40-50 kl',8:'50+ kl'};
 
-  function fmtR(v){
-    return "R" + v.toLocaleString("en-ZA", {minimumFractionDigits:2, maximumFractionDigits:2});
+  // ---------- Formatting ----------
+  function fmtR(n){
+    return 'R ' + n.toLocaleString('en-ZA', {minimumFractionDigits:2, maximumFractionDigits:2});
   }
-  function fmtKl(v){
-    return v.toLocaleString("en-ZA", {minimumFractionDigits:2, maximumFractionDigits:2});
+  function fmtKl(n){
+    return n.toLocaleString('en-ZA', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' kl';
+  }
+  function fmtPct(n){
+    return n.toLocaleString('en-ZA', {minimumFractionDigits:1, maximumFractionDigits:1}) + '%';
   }
 
-  channelGroup.addEventListener("click", function(e){
-    const btn = e.target.closest(".channel-btn");
-    if(!btn) return;
-    channel = btn.dataset.channel;
-    [...channelGroup.children].forEach(c => c.classList.toggle("active", c === btn));
-    if(resultSection.style.display === "block"){
-      runCalculation();
-    }
-  });
-
-  function validate(){
-    const v = parseFloat(amountInput.value);
-    calcBtn.disabled = !(v > 0);
+  // ---------- Fee logic ----------
+  function calcFees(amount, channel){
+    const admin = amount * 0.06;
+    const vat = admin * 0.15;
+    const transFee = channel === 'card' ? amount * 0.04 : 0;
+    const net = amount - admin - vat - transFee;
+    return {amount, admin, vat, transFee, net};
   }
-  amountInput.addEventListener("input", validate);
 
-  const VAT_RATE = 0.15;
-
-  function calcForChannel(amount, chKey){
-    const cfg = CHANNELS[chKey];
-    const adminFee = amount * cfg.adminPct;
-    const vatOnAdmin = adminFee * VAT_RATE;
-    const txFee = amount * cfg.txPct;
-    const net = amount - adminFee - vatOnAdmin - txFee;
-
+  // ---------- Allocation logic ----------
+  // Allocates `net` Rand against the step table for `channel`, starting from
+  // wherever cumulative usage (`startKl`) currently sits.
+  function allocate(net, startKl, channel){
+    const steps = STEPS[channel];
     let remaining = net;
-    let totalKl = 0;
-    const rows = [];
+    let klGained = 0;
+    let cursor = startKl;
+    const breakdown = [];
 
-    cfg.steps.forEach(step => {
-      let klGiven = 0;
-      let cost = 0;
+    for(const s of steps){
+      if(cursor >= s.upper) continue;
+      const stepStart = Math.max(cursor, s.lower);
+      const capacity = s.upper === Infinity ? Infinity : (s.upper - stepStart);
+      if(capacity <= 0) continue;
 
-      if(step.rate === 0){
-        klGiven = step.width;
-        cost = 0;
-      } else if(remaining > 0){
-        if(step.width === Infinity){
-          klGiven = remaining / step.rate;
-          cost = remaining;
-          remaining = 0;
-        } else {
-          const fullCost = step.rate * step.width;
-          if(remaining >= fullCost){
-            klGiven = step.width;
-            cost = fullCost;
-            remaining -= fullCost;
-          } else {
-            klGiven = remaining / step.rate;
-            cost = remaining;
-            remaining = 0;
-          }
-        }
-      }
-
-      totalKl += klGiven;
-      rows.push({step, klGiven, cost});
-    });
-
-    return {cfg, adminFee, vatOnAdmin, txFee, net, rows, totalKl};
-  }
-
-  function renderPrimary(amount, calc){
-    const cfg = calc.cfg;
-
-    document.getElementById("feeAmount").textContent = fmtR(amount);
-    document.getElementById("feeAdmin").textContent = "\u2212" + fmtR(calc.adminFee);
-    document.getElementById("feeVat").textContent = "\u2212" + fmtR(calc.vatOnAdmin);
-    document.getElementById("feeNet").textContent = fmtR(calc.net);
-
-    if(cfg.txPct > 0){
-      feeTxRow.style.display = "flex";
-      document.getElementById("feeTx").textContent = "\u2212" + fmtR(calc.txFee);
-    } else {
-      feeTxRow.style.display = "none";
-    }
-
-    document.getElementById("headlineKl").innerHTML = fmtKl(calc.totalKl) + "<small>kl</small>";
-    document.getElementById("headlineCaption").textContent =
-      fmtR(amount) + " via " + cfg.label + " \u2192 " + fmtR(calc.net) + " allocated to water";
-
-    const tbody = document.getElementById("stepBody");
-    tbody.innerHTML = "";
-    calc.rows.forEach(r => {
-      const tr = document.createElement("tr");
-      const isFree = r.step.rate === 0;
-      const isZero = !isFree && r.klGiven === 0;
-      if(isFree) tr.className = "free-row";
-      if(isZero) tr.className = "zero";
-
-      const rateLabel = r.step.rate === 0 ? "Free" : fmtR(r.step.rate);
-
-      tr.innerHTML =
-        '<td><span class="step-name">Step ' + r.step.n + (isFree ? '<span class="free-tag">Free</span>' : '') + '</span>' +
-        '<span class="step-range">' + r.step.range + '</span></td>' +
-        '<td class="num">' + rateLabel + '</td>' +
-        '<td class="num">' + fmtR(r.cost) + '</td>' +
-        '<td class="num">' + fmtKl(r.klGiven) + '</td>';
-      tbody.appendChild(tr);
-    });
-
-    document.getElementById("stepTotal").textContent = fmtKl(calc.totalKl);
-  }
-
-  function renderComparison(amount, cardCalc, eftCalc){
-    const deltaTotal = eftCalc.totalKl - cardCalc.totalKl;
-    const txSaved = cardCalc.txFee; // EFT's tx fee is always 0
-    const pct = cardCalc.totalKl > 0 ? (deltaTotal / cardCalc.totalKl) * 100 : 0;
-
-    document.getElementById("compareSummary").innerHTML =
-      "For the same " + fmtR(amount) + ", <b>EFT gives " + fmtKl(Math.abs(deltaTotal)) + " kl " +
-      (deltaTotal >= 0 ? "more" : "less") + "</b> than Card (" +
-      (pct >= 0 ? "+" : "") + pct.toFixed(1) + "%). " +
-      "Card's 4% transaction fee alone removes " + fmtR(txSaved) + " from the value before it ever reaches the tariff table \u2014 " +
-      "the rest of the gap comes from EFT's per-kl rates being slightly lower in most steps. Both channels also lose 15% VAT (Excise) on the admin fee itself.";
-
-    document.getElementById("cmpAdminCard").textContent = "\u2212" + fmtR(cardCalc.adminFee);
-    document.getElementById("cmpAdminEft").textContent = "\u2212" + fmtR(eftCalc.adminFee);
-    document.getElementById("cmpTxCard").textContent = "\u2212" + fmtR(cardCalc.txFee);
-    document.getElementById("cmpTxEft").textContent = eftCalc.txFee > 0 ? "\u2212" + fmtR(eftCalc.txFee) : "None";
-    document.getElementById("cmpVatCard").textContent = "\u2212" + fmtR(cardCalc.vatOnAdmin);
-    document.getElementById("cmpVatEft").textContent = "\u2212" + fmtR(eftCalc.vatOnAdmin);
-    document.getElementById("cmpNetCard").textContent = fmtR(cardCalc.net);
-    document.getElementById("cmpNetEft").textContent = fmtR(eftCalc.net);
-
-    const tbody = document.getElementById("compareStepBody");
-    tbody.innerHTML = "";
-    cardCalc.rows.forEach((cardRow, i) => {
-      const eftRow = eftCalc.rows[i];
-      const d = eftRow.klGiven - cardRow.klGiven;
-      const tr = document.createElement("tr");
-      const isFree = cardRow.step.rate === 0;
-      if(isFree) tr.className = "free-row";
-
-      let deltaClass = "delta-zero";
-      let deltaLabel = "0.00";
-      if(Math.abs(d) > 0.001){
-        deltaClass = "delta-pos";
-        deltaLabel = (d > 0 ? "+" : "\u2212") + fmtKl(Math.abs(d));
-      }
-
-      tr.innerHTML =
-        '<td><span class="step-name">Step ' + cardRow.step.n + (isFree ? '<span class="free-tag">Free</span>' : '') + '</span>' +
-        '<span class="step-range">' + cardRow.step.range + '</span></td>' +
-        '<td class="num">' + fmtKl(cardRow.klGiven) + '</td>' +
-        '<td class="num">' + fmtKl(eftRow.klGiven) + '</td>' +
-        '<td class="num ' + deltaClass + '">' + deltaLabel + '</td>';
-      tbody.appendChild(tr);
-    });
-
-    document.getElementById("cmpTotalCard").textContent = fmtKl(cardCalc.totalKl);
-    document.getElementById("cmpTotalEft").textContent = fmtKl(eftCalc.totalKl);
-    document.getElementById("cmpTotalDelta").textContent =
-      (deltaTotal >= 0 ? "+" : "\u2212") + fmtKl(Math.abs(deltaTotal));
-  }
-
-  function runCalculation(){
-    const amount = parseFloat(amountInput.value);
-    if(!(amount > 0)) return;
-
-    const cardCalc = calcForChannel(amount, "card");
-    const eftCalc = calcForChannel(amount, "eft");
-    const primaryCalc = channel === "card" ? cardCalc : eftCalc;
-
-    renderPrimary(amount, primaryCalc);
-    renderComparison(amount, cardCalc, eftCalc);
-
-    resultSection.style.display = "block";
-    resultSection.scrollIntoView({behavior:"smooth", block:"start"});
-  }
-
-  calcBtn.addEventListener("click", runCalculation);
-
-  resetBtn.addEventListener("click", function(){
-    amountInput.value = "";
-    calcBtn.disabled = true;
-    resultSection.style.display = "none";
-    window.scrollTo({top:0, behavior:"smooth"});
-    amountInput.focus();
-  });
-
-  // Install hint (only show if not already installed / standalone)
-  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
-  if(!isStandalone){
-    document.getElementById("installHint").textContent =
-      "Tip: open this page in Safari or Chrome, then use \u201cAdd to Home Screen\u201d to install it like an app.";
-  }
-
-  if("serviceWorker" in navigator){
-    window.addEventListener("load", function(){
-      navigator.serviceWorker.register("sw.js").catch(function(){});
-    });
-  }
-
-  // --- Tab switching ---
-  const tabNav = document.getElementById("tabNav");
-  const panels = {
-    single: document.getElementById("tab-single"),
-    multi: document.getElementById("tab-multi")
-  };
-  tabNav.addEventListener("click", function(e){
-    const btn = e.target.closest(".tab-btn");
-    if(!btn) return;
-    const target = btn.dataset.tab;
-    [...tabNav.children].forEach(c => c.classList.toggle("active", c === btn));
-    Object.keys(panels).forEach(key => {
-      panels[key].classList.toggle("active", key === target);
-    });
-  });
-
-  // --- Same-month purchases (cumulative stepped tariff) ---
-  const STEP_COLORS = ["#1E7A3C","#17A9A0","#3D9BB0","#0B4F6C","#C98A2E","#D97706","#C2410C","#B4451F"];
-
-  let multiChannel = "card";
-  const channelGroupMulti = document.getElementById("channelGroupMulti");
-  const multiAmountInputs = [...document.querySelectorAll(".multi-amount")];
-  const calcMultiBtn = document.getElementById("calcMultiBtn");
-  const multiResultSection = document.getElementById("multiResultSection");
-  const resetMultiBtn = document.getElementById("resetMultiBtn");
-
-  channelGroupMulti.addEventListener("click", function(e){
-    const btn = e.target.closest(".channel-btn");
-    if(!btn) return;
-    multiChannel = btn.dataset.channel;
-    [...channelGroupMulti.children].forEach(c => c.classList.toggle("active", c === btn));
-    if(multiResultSection.style.display === "block"){
-      runMultiCalculation();
-    }
-  });
-
-  function computeStepBounds(steps){
-    let cum = 0;
-    return steps.map(s => {
-      const start = cum;
-      const end = s.width === Infinity ? Infinity : cum + s.width;
-      cum = end;
-      return {step:s, start, end};
-    });
-  }
-
-  // Allocates net Rand value against the step table, continuing from
-  // wherever the cumulative kl for the month currently sits (startKl),
-  // rather than resetting to Step 1 on every purchase.
-  function allocateFromCumulative(stepBounds, startKl, netValue){
-    let kl = startKl;
-    let remaining = netValue;
-    const rows = [];
-
-    for(const b of stepBounds){
-      if(kl >= b.end) continue; // this step was fully used up by an earlier purchase this month
-
-      const capacity = b.end === Infinity ? Infinity : b.end - kl;
-
-      if(b.step.rate === 0){
+      if(s.rate === 0){
         const take = capacity;
-        kl += take;
-        if(take > 0) rows.push({step:b.step, klGiven:take, cost:0});
+        klGained += take;
+        cursor += take;
+        breakdown.push({step: s.step, rate: 0, kl: take, cost: 0});
         continue;
       }
 
       if(remaining <= 0) break;
+      const maxAfford = remaining / s.rate;
+      const take = Math.min(capacity, maxAfford);
+      if(take <= 0) break;
+      const cost = take * s.rate;
+      klGained += take;
+      cursor += take;
+      remaining -= cost;
+      breakdown.push({step: s.step, rate: s.rate, kl: take, cost: cost});
 
-      if(capacity === Infinity){
-        const take = remaining / b.step.rate;
-        kl += take;
-        rows.push({step:b.step, klGiven:take, cost:remaining});
-        remaining = 0;
-      } else {
-        const fullCost = capacity * b.step.rate;
-        if(remaining >= fullCost){
-          kl += capacity;
-          rows.push({step:b.step, klGiven:capacity, cost:fullCost});
-          remaining -= fullCost;
-        } else {
-          const take = remaining / b.step.rate;
-          kl += take;
-          rows.push({step:b.step, klGiven:take, cost:remaining});
-          remaining = 0;
-        }
-      }
+      if(maxAfford < capacity) break; // money ran out inside this step
     }
 
-    return {rows, klGained: kl - startKl, endKl: kl};
+    return {kl: klGained, breakdown, endKl: cursor};
   }
 
-  function stepLabel(s){
-    return "Step " + s.n + " (" + s.range + ")";
+  // ---------- Rendering helpers ----------
+  function renderFeeTable(el, fees, channel){
+    const rows = [
+      ['Token amount', fmtR(fees.amount)],
+      ['Admin fee (6%)', '&minus; ' + fmtR(fees.admin)],
+      ['VAT (Excise) on admin, 15%', '&minus; ' + fmtR(fees.vat)]
+    ];
+    if(channel === 'card'){
+      rows.push(['Transaction fee (4%)', '&minus; ' + fmtR(fees.transFee)]);
+    }
+    rows.push(['Value allocated to utility', fmtR(fees.net)]);
+    el.innerHTML = rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
   }
 
-  function runMultiCalculation(){
-    const cfg = CHANNELS[multiChannel];
-    const stepBounds = computeStepBounds(cfg.steps);
-    let cumulativeKl = 0;
-    const results = [];
+  function renderStepTable(el, breakdown){
+    const head = '<tr><th>Step</th><th>Rate</th><th>Cost</th><th>Kl received</th></tr>';
+    const body = breakdown.map(b => {
+      const rateText = b.rate === 0 ? 'Free' : fmtR(b.rate) + '/kl';
+      return `<tr><td>${STEP_LABELS[b.step]}</td><td>${rateText}</td><td>${fmtR(b.cost)}</td><td>${fmtKl(b.kl)}</td></tr>`;
+    }).join('');
+    el.innerHTML = head + body;
+  }
 
-    multiAmountInputs.forEach((input, i) => {
-      const amount = parseFloat(input.value) || 0;
-      if(!(amount > 0)){
-        results.push(null);
-        return;
-      }
-      const adminFee = amount * cfg.adminPct;
-      const vatOnAdmin = adminFee * VAT_RATE;
-      const txFee = amount * cfg.txPct;
-      const net = amount - adminFee - vatOnAdmin - txFee;
-      const alloc = allocateFromCumulative(stepBounds, cumulativeKl, net);
-      const rate = alloc.klGained > 0 ? net / alloc.klGained : 0;
-
-      results.push({
-        index:i, amount, adminFee, vatOnAdmin, txFee, net,
-        startKl: cumulativeKl, endKl: alloc.endKl,
-        klGained: alloc.klGained, rows: alloc.rows, rate
-      });
-      cumulativeKl = alloc.endKl;
+  // ---------- Tab switching ----------
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
     });
+  });
 
-    renderMultiResults(results, cfg);
-    multiResultSection.style.display = "block";
-    multiResultSection.scrollIntoView({behavior:"smooth", block:"start"});
+  // ---------- Channel toggles ----------
+  function wireToggle(containerId, onChange){
+    const container = document.getElementById(containerId);
+    const buttons = container.querySelectorAll('button');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        onChange(btn.dataset.channel);
+      });
+    });
   }
 
-  function renderMultiResults(results, cfg){
-    const valid = results.filter(Boolean);
+  let singleChannel = 'card';
+  let monthChannel = 'card';
+  wireToggle('single-channel', (c) => { singleChannel = c; });
+  wireToggle('month-channel', (c) => { monthChannel = c; });
+
+  // ---------- Tab 1: Single Purchase ----------
+  function runSingle(){
+    const amount = parseFloat(document.getElementById('single-amount').value) || 0;
+    const fees = calcFees(amount, singleChannel);
+    const result = allocate(fees.net, 0, singleChannel);
+
+    document.getElementById('single-headline-kl').textContent = fmtKl(result.kl);
+    renderFeeTable(document.getElementById('single-fee-table'), fees, singleChannel);
+    renderStepTable(document.getElementById('single-step-table'), result.breakdown);
+
+    // Comparison panel: same amount, both channels, fresh month
+    const cardFees = calcFees(amount, 'card');
+    const eftFees = calcFees(amount, 'eft');
+    const cardResult = allocate(cardFees.net, 0, 'card');
+    const eftResult = allocate(eftFees.net, 0, 'eft');
+
+    const compareEl = document.getElementById('single-compare');
+    compareEl.innerHTML = `
+      <div class="compare-col">
+        <h3>Card / App / Web</h3>
+        <p class="kl-mini">${fmtKl(cardResult.kl)}</p>
+        <table class="fee-table" id="cmp-card-table"></table>
+      </div>
+      <div class="compare-col">
+        <h3>EFT</h3>
+        <p class="kl-mini">${fmtKl(eftResult.kl)}</p>
+        <table class="fee-table" id="cmp-eft-table"></table>
+      </div>
+    `;
+    renderFeeTable(document.getElementById('cmp-card-table'), cardFees, 'card');
+    renderFeeTable(document.getElementById('cmp-eft-table'), eftFees, 'eft');
+
+    const diff = eftResult.kl - cardResult.kl;
+    const pct = cardResult.kl > 0 ? (diff / cardResult.kl) * 100 : 0;
+    let note;
+    if(Math.abs(diff) < 0.005){
+      note = `For ${fmtR(amount)}, Card and EFT land on almost the same amount of water this time.`;
+    } else if(diff > 0){
+      note = `For ${fmtR(amount)}, EFT delivers ${fmtKl(diff)} more than Card, about ${fmtPct(pct)} extra, because EFT carries no transaction fee and its per kilolitre rates sit slightly below Card in every paid step.`;
+    } else {
+      note = `For ${fmtR(amount)}, Card delivers ${fmtKl(-diff)} more than EFT this time, about ${fmtPct(-pct)} extra, which can happen once the higher steps are reached and rounding shifts the balance.`;
+    }
+    document.getElementById('single-compare-note').textContent = note;
+  }
+
+  document.getElementById('single-calc').addEventListener('click', runSingle);
+
+  // ---------- Tab 2: Same Month Purchases ----------
+  function runMonth(){
+    const amounts = [
+      parseFloat(document.getElementById('p1').value) || 0,
+      parseFloat(document.getElementById('p2').value) || 0,
+      parseFloat(document.getElementById('p3').value) || 0
+    ];
+
+    let cumulative = 0;
+    const purchases = amounts.map((amount, i) => {
+      const fees = calcFees(amount, monthChannel);
+      const result = allocate(fees.net, cumulative, monthChannel);
+      const startKl = cumulative;
+      cumulative = result.endKl;
+      const effRate = result.kl > 0 ? fees.net / result.kl : 0;
+      return {
+        index: i + 1,
+        amount,
+        fees,
+        result,
+        startKl,
+        endKl: cumulative,
+        effRate
+      };
+    });
 
     // Summary paragraph
-    let summary = "Kilolitres are allocated against your <b>cumulative usage for the whole billing month</b>, not reset for every purchase. " +
-      "The free 0&ndash;6 kl allocation, and each cheaper step above it, are only available once &mdash; the first time your usage reaches them. " +
-      "Buy again later in the same month and the next Rand picks up higher on the price ladder, where every kl costs more.";
-
-    for(let i = 1; i < results.length; i++){
-      const prev = results[i-1], cur = results[i];
-      if(!prev || !cur) continue;
-      if(Math.abs(prev.amount - cur.amount) < 0.01){
-        const diff = prev.klGained - cur.klGained;
-        if(diff > 0.005){
-          const pct = prev.klGained > 0 ? (diff / prev.klGained) * 100 : 0;
-          summary += " Purchase " + (i+1) + " paid the exact same " + fmtR(cur.amount) +
-            " as Purchase " + i + " but received " + fmtKl(diff) + " kl less (" + pct.toFixed(1) +
-            "% less) &mdash; because it landed on " + stepLabel(cur.rows[0] ? cur.rows[0].step : cur.rows[cur.rows.length-1].step) +
-            " instead of starting back at Step 1.";
+    let summary = `Kilolitres are allocated on cumulative usage for the month, not reset with every top up, so the free step and each cheap step are only available once the running total first reaches them.`;
+    const callouts = [];
+    for(let a = 0; a < purchases.length; a++){
+      for(let b = a + 1; b < purchases.length; b++){
+        const pa = purchases[a], pb = purchases[b];
+        if(Math.abs(pa.amount - pb.amount) < 0.005 && pa.amount > 0 && Math.abs(pa.result.kl - pb.result.kl) > 0.005){
+          const diff = pa.result.kl - pb.result.kl;
+          const pct = pa.result.kl > 0 ? (Math.abs(diff) / pa.result.kl) * 100 : 0;
+          callouts.push(`Purchase ${pa.index} and Purchase ${pb.index} were both ${fmtR(pa.amount)}, but Purchase ${pb.index} returned ${fmtKl(Math.abs(diff))} less, a drop of ${fmtPct(pct)}, because it landed on higher, more expensive steps.`);
         }
       }
     }
-
-    document.getElementById("multiSummary").innerHTML = summary;
+    if(callouts.length){
+      summary += ' ' + callouts.join(' ');
+    }
+    document.getElementById('month-summary').textContent = summary;
 
     // Table
-    const tbody = document.getElementById("multiTableBody");
-    tbody.innerHTML = "";
-    results.forEach((r, i) => {
-      const tr = document.createElement("tr");
-      if(!r){
-        tr.innerHTML = '<td>Purchase ' + (i+1) + '</td><td class="num" colspan="4" style="color:var(--ink-soft);">No amount entered</td>';
-        tbody.appendChild(tr);
-        return;
-      }
-      const stepsUsed = r.rows.filter(row => row.klGiven > 0.0001).map(row => "Step " + row.step.n).join(", ");
-      tr.innerHTML =
-        '<td><span class="step-name">Purchase ' + (i+1) + '</span><span class="step-range">' + fmtR(r.amount) + '</span></td>' +
-        '<td class="num">' + fmtR(r.net) + '</td>' +
-        '<td class="num">' + (r.rate > 0 ? fmtR(r.rate) : '&mdash;') + '</td>' +
-        '<td class="num">' + fmtKl(r.klGained) + '</td>' +
-        '<td class="num">' + fmtKl(r.endKl) + '</td>';
-      tbody.appendChild(tr);
-      const stepTr = document.createElement("tr");
-      stepTr.innerHTML = '<td colspan="5" class="step-used">Used: ' + (stepsUsed || '&mdash;') + '</td>';
-      tbody.appendChild(stepTr);
-    });
+    const head = '<tr><th>Purchase</th><th>Amount</th><th>Net after fees</th><th>Effective rate</th><th>Kl this purchase</th><th>Cumulative kl</th><th>Steps used</th></tr>';
+    const rows = purchases.map(p => {
+      const stepsUsed = p.result.breakdown.map(b => b.step).join(', ');
+      return `<tr>
+        <td>${p.index}</td>
+        <td>${fmtR(p.amount)}</td>
+        <td>${fmtR(p.fees.net)}</td>
+        <td>${p.effRate > 0 ? fmtR(p.effRate) + '/kl' : '&mdash;'}</td>
+        <td>${fmtKl(p.result.kl)}</td>
+        <td>${fmtKl(p.endKl)}</td>
+        <td>${stepsUsed || '&mdash;'}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('month-table').innerHTML = head + rows;
 
     // Bars
-    const maxKl = Math.max(...valid.map(r => r.klGained), 0.01);
-    const barsWrap = document.getElementById("multiBars");
-    barsWrap.innerHTML = "";
-    const usedStepNums = new Set();
+    const maxKl = Math.max(...purchases.map(p => p.result.kl), 0.001);
+    const barsEl = document.getElementById('month-bars');
+    barsEl.innerHTML = purchases.map(p => {
+      const widthPct = (p.result.kl / maxKl) * 100;
+      const segs = p.result.breakdown.map(b => {
+        const segWidth = p.result.kl > 0 ? (b.kl / p.result.kl) * 100 : 0;
+        return `<div class="bar-seg" style="width:${segWidth}%; background:${STEP_COLORS[b.step]};"></div>`;
+      }).join('');
+      return `
+        <div class="bar-row">
+          <div class="bar-label">Purchase ${p.index}</div>
+          <div class="bar-track" style="max-width:${widthPct}%; width:${widthPct}%;">${segs}</div>
+          <div class="bar-kl">${fmtKl(p.result.kl)}</div>
+        </div>`;
+    }).join('');
 
-    results.forEach((r, i) => {
-      if(!r) return;
-      const row = document.createElement("div");
-      row.className = "bar-row";
-
-      const label = document.createElement("div");
-      label.className = "bar-label";
-      label.innerHTML = '<span>Purchase ' + (i+1) + '</span><span class="bar-sub">' + fmtR(r.amount) + ' &rarr; ' + fmtKl(r.klGained) + ' kl</span>';
-      row.appendChild(label);
-
-      const track = document.createElement("div");
-      track.className = "bar-track";
-      r.rows.forEach(seg => {
-        if(seg.klGiven <= 0.0001) return;
-        usedStepNums.add(seg.step.n);
-        const pct = (seg.klGiven / maxKl) * 100;
-        const div = document.createElement("div");
-        div.className = "bar-seg";
-        div.style.width = pct + "%";
-        div.style.background = STEP_COLORS[(seg.step.n - 1) % STEP_COLORS.length];
-        div.title = "Step " + seg.step.n + " (" + seg.step.range + "): " + fmtKl(seg.klGiven) + " kl";
-        track.appendChild(div);
-      });
-      row.appendChild(track);
-      barsWrap.appendChild(row);
-    });
-
-    const legend = document.getElementById("multiLegend");
-    legend.innerHTML = "";
-    [...usedStepNums].sort((a,b)=>a-b).forEach(n => {
-      const stepDef = cfg.steps.find(s => s.n === n);
-      const item = document.createElement("div");
-      item.className = "bar-legend-item";
-      item.innerHTML = '<span class="bar-legend-dot" style="background:' + STEP_COLORS[(n-1) % STEP_COLORS.length] + '"></span>' +
-        'Step ' + n + ' (' + stepDef.range + (stepDef.rate === 0 ? ", free" : ", " + fmtR(stepDef.rate) + "/kl") + ')';
-      legend.appendChild(item);
-    });
+    // Legend: only steps actually touched across all purchases
+    const usedSteps = new Set();
+    purchases.forEach(p => p.result.breakdown.forEach(b => usedSteps.add(b.step)));
+    const rates = STEPS[monthChannel];
+    const legendEl = document.getElementById('month-legend');
+    legendEl.innerHTML = Array.from(usedSteps).sort((a,b) => a-b).map(step => {
+      const rateInfo = rates.find(r => r.step === step);
+      const rateText = rateInfo.rate === 0 ? 'free' : fmtR(rateInfo.rate) + '/kl';
+      return `<div class="legend-item"><span class="legend-swatch" style="background:${STEP_COLORS[step]};"></span>Step ${step}, ${STEP_LABELS[step]}, ${rateText}</div>`;
+    }).join('');
   }
 
-  calcMultiBtn.addEventListener("click", runMultiCalculation);
+  document.getElementById('month-calc').addEventListener('click', runMonth);
 
-  resetMultiBtn.addEventListener("click", function(){
-    multiResultSection.style.display = "none";
-    document.getElementById("tab-multi").scrollIntoView({behavior:"smooth", block:"start"});
-  });
+  // ---------- Initial render ----------
+  runSingle();
+  runMonth();
+
+  // ---------- PWA: manifest, icon, install hint, service worker ----------
+  const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <rect width="100" height="100" rx="20" fill="#2C6E6B"/>
+    <path d="M50 18 C50 18 26 46 26 63 A24 24 0 0 0 74 63 C74 46 50 18 50 18 Z" fill="#EAF6F4"/>
+  </svg>`;
+  const iconUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
+  document.getElementById('apple-icon').href = iconUrl;
+  document.getElementById('favicon').href = iconUrl;
+
+  const manifest = {
+    name: 'Water Step Calculator',
+    short_name: 'WaterCalc',
+    start_url: '.',
+    display: 'standalone',
+    background_color: '#FAFAF7',
+    theme_color: '#2C6E6B',
+    icons: [
+      {src: iconUrl, sizes: '192x192', type: 'image/svg+xml'},
+      {src: iconUrl, sizes: '512x512', type: 'image/svg+xml'}
+    ]
+  };
+  const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+  document.getElementById('manifest-link').href = URL.createObjectURL(manifestBlob);
+
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if(!isStandalone){
+    document.getElementById('a2hs').classList.add('show');
+  }
+
+  if('serviceWorker' in navigator){
+    const swCode = `
+      self.addEventListener('install', e => self.skipWaiting());
+      self.addEventListener('activate', e => self.clients.claim());
+      self.addEventListener('fetch', e => {
+        e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+      });
+    `;
+    const swBlob = new Blob([swCode], {type: 'application/javascript'});
+    const swUrl = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl).catch(() => {});
+  }
 
 })();
 </script>
