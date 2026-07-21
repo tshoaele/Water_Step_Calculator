@@ -347,6 +347,53 @@
     margin-top: 16px;
   }
 
+  .summary-list{
+    margin: 0;
+    padding-left: 20px;
+  }
+  .summary-list li{
+    margin: 0 0 10px;
+  }
+  .summary-list li:last-child{
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 719px){
+    table.month-table thead{ display: none; }
+    table.month-table, table.month-table tbody, table.month-table tr, table.month-table td{
+      display: block;
+      width: 100%;
+    }
+    table.month-table tr{
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 4px 12px;
+      margin-bottom: 12px;
+      background: var(--surface-tint);
+    }
+    table.month-table td{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+      padding: 9px 0;
+    }
+    table.month-table td:last-child{
+      border-bottom: none;
+    }
+    table.month-table td::before{
+      content: attr(data-label);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-faint);
+      font-weight: 600;
+      text-align: left;
+    }
+  }
+
   .purchase-inputs{
     display: grid;
     grid-template-columns: 1fr;
@@ -759,36 +806,32 @@
       };
     });
 
-    // Summary paragraph
-    let summary = `Kilolitres are allocated on cumulative usage for the month, not reset with every top up, so the free step and each cheap step are only available once the running total first reaches them.`;
-    const callouts = [];
+    // Summary bullet list
+    const summaryItems = [`Kilolitres are allocated on cumulative usage for the month, not reset with every top up, so the free step and each cheap step are only available once the running total first reaches them.`];
     for(let a = 0; a < purchases.length; a++){
       for(let b = a + 1; b < purchases.length; b++){
         const pa = purchases[a], pb = purchases[b];
         if(Math.abs(pa.amount - pb.amount) < 0.005 && pa.amount > 0 && Math.abs(pa.result.kl - pb.result.kl) > 0.005){
           const diff = pa.result.kl - pb.result.kl;
           const pct = pa.result.kl > 0 ? (Math.abs(diff) / pa.result.kl) * 100 : 0;
-          callouts.push(`Purchase ${pa.index} and Purchase ${pb.index} were both ${fmtR(pa.amount)}, but Purchase ${pb.index} returned ${fmtKl(Math.abs(diff))} less, a drop of ${fmtPct(pct)}, because it landed on higher, more expensive steps.`);
+          summaryItems.push(`Purchase ${pa.index} and Purchase ${pb.index} were both ${fmtR(pa.amount)}, but Purchase ${pb.index} returned ${fmtKl(Math.abs(diff))} less, a drop of ${fmtPct(pct)}, because it landed on higher, more expensive steps.`);
         }
       }
     }
-    if(callouts.length){
-      summary += ' ' + callouts.join(' ');
-    }
-    document.getElementById('month-summary').textContent = summary;
+    document.getElementById('month-summary').innerHTML = '<ul class="summary-list">' + summaryItems.map(item => `<li>${item}</li>`).join('') + '</ul>';
 
     // Table
     const head = '<tr><th>Purchase</th><th>Amount</th><th>Net after fees</th><th>Effective rate</th><th>Kl this purchase</th><th>Cumulative kl</th><th>Steps used</th></tr>';
     const rows = purchases.map(p => {
       const stepsUsed = p.result.breakdown.map(b => b.step).join(', ');
       return `<tr>
-        <td>${p.index}</td>
-        <td>${fmtR(p.amount)}</td>
-        <td>${fmtR(p.fees.net)}</td>
-        <td>${p.effRate > 0 ? fmtR(p.effRate) + '/kl' : '&mdash;'}</td>
-        <td>${fmtKl(p.result.kl)}</td>
-        <td>${fmtKl(p.endKl)}</td>
-        <td>${stepsUsed || '&mdash;'}</td>
+        <td data-label="Purchase">${p.index}</td>
+        <td data-label="Amount">${fmtR(p.amount)}</td>
+        <td data-label="Net after fees">${fmtR(p.fees.net)}</td>
+        <td data-label="Effective rate">${p.effRate > 0 ? fmtR(p.effRate) + '/kl' : '&mdash;'}</td>
+        <td data-label="Kl this purchase">${fmtKl(p.result.kl)}</td>
+        <td data-label="Cumulative kl">${fmtKl(p.endKl)}</td>
+        <td data-label="Steps used">${stepsUsed || '&mdash;'}</td>
       </tr>`;
     }).join('');
     document.getElementById('month-table').innerHTML = head + rows;
