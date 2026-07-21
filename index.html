@@ -476,6 +476,7 @@
         <ul class="fee-list">
           <li><span class="fl-label">Token amount</span><span class="fl-val" id="feeAmount">R0.00</span></li>
           <li class="deduction"><span class="fl-label">Admin fee (6%)</span><span class="fl-val" id="feeAdmin">&minus;R0.00</span></li>
+          <li class="deduction"><span class="fl-label">VAT on admin fee (15%)</span><span class="fl-val" id="feeVat">&minus;R0.00</span></li>
           <li class="deduction" id="feeTxRow"><span class="fl-label">Transaction fee (4%)</span><span class="fl-val" id="feeTx">&minus;R0.00</span></li>
           <li class="net"><span class="fl-label">Value allocated to utility</span><span class="fl-val" id="feeNet">R0.00</span></li>
         </ul>
@@ -521,6 +522,11 @@
             <td class="cmp-label">Admin fee (6%)</td>
             <td class="num" id="cmpAdminCard"></td>
             <td class="num" id="cmpAdminEft"></td>
+          </tr>
+          <tr>
+            <td class="cmp-label">VAT on admin fee (15%)</td>
+            <td class="num" id="cmpVatCard"></td>
+            <td class="num" id="cmpVatEft"></td>
           </tr>
           <tr>
             <td class="cmp-label">Transaction fee</td>
@@ -634,11 +640,14 @@
   }
   amountInput.addEventListener("input", validate);
 
+  const VAT_RATE = 0.15;
+
   function calcForChannel(amount, chKey){
     const cfg = CHANNELS[chKey];
     const adminFee = amount * cfg.adminPct;
+    const vatOnAdmin = adminFee * VAT_RATE;
     const txFee = amount * cfg.txPct;
-    const net = amount - adminFee - txFee;
+    const net = amount - adminFee - vatOnAdmin - txFee;
 
     let remaining = net;
     let totalKl = 0;
@@ -674,7 +683,7 @@
       rows.push({step, klGiven, cost});
     });
 
-    return {cfg, adminFee, txFee, net, rows, totalKl};
+    return {cfg, adminFee, vatOnAdmin, txFee, net, rows, totalKl};
   }
 
   function renderPrimary(amount, calc){
@@ -682,6 +691,7 @@
 
     document.getElementById("feeAmount").textContent = fmtR(amount);
     document.getElementById("feeAdmin").textContent = "\u2212" + fmtR(calc.adminFee);
+    document.getElementById("feeVat").textContent = "\u2212" + fmtR(calc.vatOnAdmin);
     document.getElementById("feeNet").textContent = fmtR(calc.net);
 
     if(cfg.txPct > 0){
@@ -728,10 +738,12 @@
       (deltaTotal >= 0 ? "more" : "less") + "</b> than Card (" +
       (pct >= 0 ? "+" : "") + pct.toFixed(1) + "%). " +
       "Card's 4% transaction fee alone removes " + fmtR(txSaved) + " from the value before it ever reaches the tariff table \u2014 " +
-      "the rest of the gap comes from EFT's per-kl rates being slightly lower in most steps.";
+      "the rest of the gap comes from EFT's per-kl rates being slightly lower in most steps. Both channels also lose 15% VAT on the admin fee itself.";
 
     document.getElementById("cmpAdminCard").textContent = "\u2212" + fmtR(cardCalc.adminFee);
     document.getElementById("cmpAdminEft").textContent = "\u2212" + fmtR(eftCalc.adminFee);
+    document.getElementById("cmpVatCard").textContent = "\u2212" + fmtR(cardCalc.vatOnAdmin);
+    document.getElementById("cmpVatEft").textContent = "\u2212" + fmtR(eftCalc.vatOnAdmin);
     document.getElementById("cmpTxCard").textContent = "\u2212" + fmtR(cardCalc.txFee);
     document.getElementById("cmpTxEft").textContent = eftCalc.txFee > 0 ? "\u2212" + fmtR(eftCalc.txFee) : "None";
     document.getElementById("cmpNetCard").textContent = fmtR(cardCalc.net);
