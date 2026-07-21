@@ -383,6 +383,94 @@
     line-height:1.6;
   }
 
+  .tab-nav{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin:0 0 16px;
+  }
+  .tab-btn{
+    border:1.5px solid var(--line);
+    background:var(--paper);
+    border-radius:var(--radius);
+    padding:12px 10px;
+    text-align:center;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:13.5px;
+    font-weight:700;
+    color:var(--ink-soft);
+    transition:border-color .15s ease, background .15s ease, color .15s ease;
+  }
+  .tab-btn.active{
+    border-color:var(--ocean);
+    background:var(--ocean);
+    color:#fff;
+  }
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  .purchase-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:10px;
+  }
+  .purchase-row .pr-label{
+    flex:none;
+    width:84px;
+    font-size:13.5px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .purchase-row .amount-input-row{flex:1;}
+  .purchase-row .amount-input-row input{font-size:17px; padding:9px 6px;}
+
+  #multiTable td, #multiTable th{font-size:12.5px;}
+  #multiTable td.step-used{color:var(--ink-soft); font-size:11.5px;}
+
+  .bar-row{margin-bottom:16px;}
+  .bar-label{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-size:13px;
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  .bar-sub{
+    font-weight:600;
+    color:var(--ink-soft);
+    font-size:12.5px;
+  }
+  .bar-track{
+    display:flex;
+    height:24px;
+    border-radius:7px;
+    overflow:hidden;
+    background:var(--sand);
+    border:1px solid var(--line);
+  }
+  .bar-seg{height:100%;}
+  .bar-legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 16px;
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+  }
+  .bar-legend-item{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+  .bar-legend-dot{
+    width:10px;height:10px;border-radius:3px;flex:none;
+  }
+
   footer.sig{
     text-align:center;
     padding:22px 18px 6px;
@@ -439,6 +527,13 @@
 
 <main class="wrap">
 
+  <div class="tab-nav" id="tabNav">
+    <button type="button" class="tab-btn active" data-tab="single">Single Purchase</button>
+    <button type="button" class="tab-btn" data-tab="multi">Same-Month Purchases</button>
+  </div>
+
+  <div id="tab-single" class="tab-panel active">
+
   <div class="card">
     <label class="field-label" for="amount">Token amount purchased</label>
     <div class="amount-input-row">
@@ -476,7 +571,7 @@
         <ul class="fee-list">
           <li><span class="fl-label">Token amount</span><span class="fl-val" id="feeAmount">R0.00</span></li>
           <li class="deduction"><span class="fl-label">Admin fee (6%)</span><span class="fl-val" id="feeAdmin">&minus;R0.00</span></li>
-          <li class="deduction"><span class="fl-label">VAT on admin fee (15%)</span><span class="fl-val" id="feeVat">&minus;R0.00</span></li>
+          <li class="deduction"><span class="fl-label">VAT (Excise) on admin fee (15%)</span><span class="fl-val" id="feeVat">&minus;R0.00</span></li>
           <li class="deduction" id="feeTxRow"><span class="fl-label">Transaction fee (4%)</span><span class="fl-val" id="feeTx">&minus;R0.00</span></li>
           <li class="net"><span class="fl-label">Value allocated to utility</span><span class="fl-val" id="feeNet">R0.00</span></li>
         </ul>
@@ -524,14 +619,14 @@
             <td class="num" id="cmpAdminEft"></td>
           </tr>
           <tr>
-            <td class="cmp-label">VAT on admin fee (15%)</td>
-            <td class="num" id="cmpVatCard"></td>
-            <td class="num" id="cmpVatEft"></td>
-          </tr>
-          <tr>
             <td class="cmp-label">Transaction fee</td>
             <td class="num" id="cmpTxCard"></td>
             <td class="num" id="cmpTxEft"></td>
+          </tr>
+          <tr>
+            <td class="cmp-label">VAT (Excise) on admin fee (15%)</td>
+            <td class="num" id="cmpVatCard"></td>
+            <td class="num" id="cmpVatEft"></td>
           </tr>
           <tr class="cmp-net">
             <td class="cmp-label">Value allocated to water</td>
@@ -567,6 +662,85 @@
   </div>
 
   <p class="install-hint" id="installHint"></p>
+
+  </div>
+
+  <div id="tab-multi" class="tab-panel">
+
+  <div class="card">
+    <label class="field-label">Purchase channel</label>
+    <div class="channel-group" id="channelGroupMulti">
+      <button type="button" class="channel-btn active" data-channel="card">
+        <span class="ct-title">Card / App / Web</span>
+        <span class="ct-sub">6% admin + 4% transaction fee, each purchase</span>
+      </button>
+      <button type="button" class="channel-btn" data-channel="eft">
+        <span class="ct-title">EFT</span>
+        <span class="ct-sub">6% admin fee only, each purchase</span>
+      </button>
+    </div>
+
+    <label class="field-label" style="margin-top:20px;">Purchases made this billing month</label>
+    <div id="purchaseInputs">
+      <div class="purchase-row">
+        <span class="pr-label">Purchase 1</span>
+        <div class="amount-input-row">
+          <span class="rand-sign">R</span>
+          <input type="number" class="multi-amount" data-index="0" inputmode="decimal" value="1000" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="purchase-row">
+        <span class="pr-label">Purchase 2</span>
+        <div class="amount-input-row">
+          <span class="rand-sign">R</span>
+          <input type="number" class="multi-amount" data-index="1" inputmode="decimal" value="1000" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="purchase-row">
+        <span class="pr-label">Purchase 3</span>
+        <div class="amount-input-row">
+          <span class="rand-sign">R</span>
+          <input type="number" class="multi-amount" data-index="2" inputmode="decimal" value="1000" min="0" step="0.01">
+        </div>
+      </div>
+    </div>
+
+    <button id="calcMultiBtn">Calculate all three</button>
+  </div>
+
+  <div id="multiResultSection" style="display:none;">
+
+    <div class="card">
+      <p class="section-heading">Why the same Rand amount can buy less each time</p>
+      <p class="compare-summary" id="multiSummary"></p>
+    </div>
+
+    <div class="card">
+      <p class="section-heading">Purchase-by-purchase breakdown</p>
+      <table class="step-table" id="multiTable">
+        <thead>
+          <tr>
+            <th>Purchase</th>
+            <th class="num">Net after fees</th>
+            <th class="num">Rate (R/kl)</th>
+            <th class="num">Kl this purchase</th>
+            <th class="num">Cumulative kl</th>
+          </tr>
+        </thead>
+        <tbody id="multiTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <p class="section-heading">Kilolitres received per purchase</p>
+      <div id="multiBars"></div>
+      <div class="bar-legend" id="multiLegend"></div>
+    </div>
+
+    <button class="reset-link" id="resetMultiBtn">Edit amounts</button>
+  </div>
+
+  </div>
 
 </main>
 
@@ -738,14 +912,14 @@
       (deltaTotal >= 0 ? "more" : "less") + "</b> than Card (" +
       (pct >= 0 ? "+" : "") + pct.toFixed(1) + "%). " +
       "Card's 4% transaction fee alone removes " + fmtR(txSaved) + " from the value before it ever reaches the tariff table \u2014 " +
-      "the rest of the gap comes from EFT's per-kl rates being slightly lower in most steps. Both channels also lose 15% VAT on the admin fee itself.";
+      "the rest of the gap comes from EFT's per-kl rates being slightly lower in most steps. Both channels also lose 15% VAT (Excise) on the admin fee itself.";
 
     document.getElementById("cmpAdminCard").textContent = "\u2212" + fmtR(cardCalc.adminFee);
     document.getElementById("cmpAdminEft").textContent = "\u2212" + fmtR(eftCalc.adminFee);
-    document.getElementById("cmpVatCard").textContent = "\u2212" + fmtR(cardCalc.vatOnAdmin);
-    document.getElementById("cmpVatEft").textContent = "\u2212" + fmtR(eftCalc.vatOnAdmin);
     document.getElementById("cmpTxCard").textContent = "\u2212" + fmtR(cardCalc.txFee);
     document.getElementById("cmpTxEft").textContent = eftCalc.txFee > 0 ? "\u2212" + fmtR(eftCalc.txFee) : "None";
+    document.getElementById("cmpVatCard").textContent = "\u2212" + fmtR(cardCalc.vatOnAdmin);
+    document.getElementById("cmpVatEft").textContent = "\u2212" + fmtR(eftCalc.vatOnAdmin);
     document.getElementById("cmpNetCard").textContent = fmtR(cardCalc.net);
     document.getElementById("cmpNetEft").textContent = fmtR(eftCalc.net);
 
@@ -817,6 +991,233 @@
       navigator.serviceWorker.register("sw.js").catch(function(){});
     });
   }
+
+  // --- Tab switching ---
+  const tabNav = document.getElementById("tabNav");
+  const panels = {
+    single: document.getElementById("tab-single"),
+    multi: document.getElementById("tab-multi")
+  };
+  tabNav.addEventListener("click", function(e){
+    const btn = e.target.closest(".tab-btn");
+    if(!btn) return;
+    const target = btn.dataset.tab;
+    [...tabNav.children].forEach(c => c.classList.toggle("active", c === btn));
+    Object.keys(panels).forEach(key => {
+      panels[key].classList.toggle("active", key === target);
+    });
+  });
+
+  // --- Same-month purchases (cumulative stepped tariff) ---
+  const STEP_COLORS = ["#1E7A3C","#17A9A0","#3D9BB0","#0B4F6C","#C98A2E","#D97706","#C2410C","#B4451F"];
+
+  let multiChannel = "card";
+  const channelGroupMulti = document.getElementById("channelGroupMulti");
+  const multiAmountInputs = [...document.querySelectorAll(".multi-amount")];
+  const calcMultiBtn = document.getElementById("calcMultiBtn");
+  const multiResultSection = document.getElementById("multiResultSection");
+  const resetMultiBtn = document.getElementById("resetMultiBtn");
+
+  channelGroupMulti.addEventListener("click", function(e){
+    const btn = e.target.closest(".channel-btn");
+    if(!btn) return;
+    multiChannel = btn.dataset.channel;
+    [...channelGroupMulti.children].forEach(c => c.classList.toggle("active", c === btn));
+    if(multiResultSection.style.display === "block"){
+      runMultiCalculation();
+    }
+  });
+
+  function computeStepBounds(steps){
+    let cum = 0;
+    return steps.map(s => {
+      const start = cum;
+      const end = s.width === Infinity ? Infinity : cum + s.width;
+      cum = end;
+      return {step:s, start, end};
+    });
+  }
+
+  // Allocates net Rand value against the step table, continuing from
+  // wherever the cumulative kl for the month currently sits (startKl),
+  // rather than resetting to Step 1 on every purchase.
+  function allocateFromCumulative(stepBounds, startKl, netValue){
+    let kl = startKl;
+    let remaining = netValue;
+    const rows = [];
+
+    for(const b of stepBounds){
+      if(kl >= b.end) continue; // this step was fully used up by an earlier purchase this month
+
+      const capacity = b.end === Infinity ? Infinity : b.end - kl;
+
+      if(b.step.rate === 0){
+        const take = capacity;
+        kl += take;
+        if(take > 0) rows.push({step:b.step, klGiven:take, cost:0});
+        continue;
+      }
+
+      if(remaining <= 0) break;
+
+      if(capacity === Infinity){
+        const take = remaining / b.step.rate;
+        kl += take;
+        rows.push({step:b.step, klGiven:take, cost:remaining});
+        remaining = 0;
+      } else {
+        const fullCost = capacity * b.step.rate;
+        if(remaining >= fullCost){
+          kl += capacity;
+          rows.push({step:b.step, klGiven:capacity, cost:fullCost});
+          remaining -= fullCost;
+        } else {
+          const take = remaining / b.step.rate;
+          kl += take;
+          rows.push({step:b.step, klGiven:take, cost:remaining});
+          remaining = 0;
+        }
+      }
+    }
+
+    return {rows, klGained: kl - startKl, endKl: kl};
+  }
+
+  function stepLabel(s){
+    return "Step " + s.n + " (" + s.range + ")";
+  }
+
+  function runMultiCalculation(){
+    const cfg = CHANNELS[multiChannel];
+    const stepBounds = computeStepBounds(cfg.steps);
+    let cumulativeKl = 0;
+    const results = [];
+
+    multiAmountInputs.forEach((input, i) => {
+      const amount = parseFloat(input.value) || 0;
+      if(!(amount > 0)){
+        results.push(null);
+        return;
+      }
+      const adminFee = amount * cfg.adminPct;
+      const vatOnAdmin = adminFee * VAT_RATE;
+      const txFee = amount * cfg.txPct;
+      const net = amount - adminFee - vatOnAdmin - txFee;
+      const alloc = allocateFromCumulative(stepBounds, cumulativeKl, net);
+      const rate = alloc.klGained > 0 ? net / alloc.klGained : 0;
+
+      results.push({
+        index:i, amount, adminFee, vatOnAdmin, txFee, net,
+        startKl: cumulativeKl, endKl: alloc.endKl,
+        klGained: alloc.klGained, rows: alloc.rows, rate
+      });
+      cumulativeKl = alloc.endKl;
+    });
+
+    renderMultiResults(results, cfg);
+    multiResultSection.style.display = "block";
+    multiResultSection.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  function renderMultiResults(results, cfg){
+    const valid = results.filter(Boolean);
+
+    // Summary paragraph
+    let summary = "Kilolitres are allocated against your <b>cumulative usage for the whole billing month</b>, not reset for every purchase. " +
+      "The free 0&ndash;6 kl allocation, and each cheaper step above it, are only available once &mdash; the first time your usage reaches them. " +
+      "Buy again later in the same month and the next Rand picks up higher on the price ladder, where every kl costs more.";
+
+    for(let i = 1; i < results.length; i++){
+      const prev = results[i-1], cur = results[i];
+      if(!prev || !cur) continue;
+      if(Math.abs(prev.amount - cur.amount) < 0.01){
+        const diff = prev.klGained - cur.klGained;
+        if(diff > 0.005){
+          const pct = prev.klGained > 0 ? (diff / prev.klGained) * 100 : 0;
+          summary += " Purchase " + (i+1) + " paid the exact same " + fmtR(cur.amount) +
+            " as Purchase " + i + " but received " + fmtKl(diff) + " kl less (" + pct.toFixed(1) +
+            "% less) &mdash; because it landed on " + stepLabel(cur.rows[0] ? cur.rows[0].step : cur.rows[cur.rows.length-1].step) +
+            " instead of starting back at Step 1.";
+        }
+      }
+    }
+
+    document.getElementById("multiSummary").innerHTML = summary;
+
+    // Table
+    const tbody = document.getElementById("multiTableBody");
+    tbody.innerHTML = "";
+    results.forEach((r, i) => {
+      const tr = document.createElement("tr");
+      if(!r){
+        tr.innerHTML = '<td>Purchase ' + (i+1) + '</td><td class="num" colspan="4" style="color:var(--ink-soft);">No amount entered</td>';
+        tbody.appendChild(tr);
+        return;
+      }
+      const stepsUsed = r.rows.filter(row => row.klGiven > 0.0001).map(row => "Step " + row.step.n).join(", ");
+      tr.innerHTML =
+        '<td><span class="step-name">Purchase ' + (i+1) + '</span><span class="step-range">' + fmtR(r.amount) + '</span></td>' +
+        '<td class="num">' + fmtR(r.net) + '</td>' +
+        '<td class="num">' + (r.rate > 0 ? fmtR(r.rate) : '&mdash;') + '</td>' +
+        '<td class="num">' + fmtKl(r.klGained) + '</td>' +
+        '<td class="num">' + fmtKl(r.endKl) + '</td>';
+      tbody.appendChild(tr);
+      const stepTr = document.createElement("tr");
+      stepTr.innerHTML = '<td colspan="5" class="step-used">Used: ' + (stepsUsed || '&mdash;') + '</td>';
+      tbody.appendChild(stepTr);
+    });
+
+    // Bars
+    const maxKl = Math.max(...valid.map(r => r.klGained), 0.01);
+    const barsWrap = document.getElementById("multiBars");
+    barsWrap.innerHTML = "";
+    const usedStepNums = new Set();
+
+    results.forEach((r, i) => {
+      if(!r) return;
+      const row = document.createElement("div");
+      row.className = "bar-row";
+
+      const label = document.createElement("div");
+      label.className = "bar-label";
+      label.innerHTML = '<span>Purchase ' + (i+1) + '</span><span class="bar-sub">' + fmtR(r.amount) + ' &rarr; ' + fmtKl(r.klGained) + ' kl</span>';
+      row.appendChild(label);
+
+      const track = document.createElement("div");
+      track.className = "bar-track";
+      r.rows.forEach(seg => {
+        if(seg.klGiven <= 0.0001) return;
+        usedStepNums.add(seg.step.n);
+        const pct = (seg.klGiven / maxKl) * 100;
+        const div = document.createElement("div");
+        div.className = "bar-seg";
+        div.style.width = pct + "%";
+        div.style.background = STEP_COLORS[(seg.step.n - 1) % STEP_COLORS.length];
+        div.title = "Step " + seg.step.n + " (" + seg.step.range + "): " + fmtKl(seg.klGiven) + " kl";
+        track.appendChild(div);
+      });
+      row.appendChild(track);
+      barsWrap.appendChild(row);
+    });
+
+    const legend = document.getElementById("multiLegend");
+    legend.innerHTML = "";
+    [...usedStepNums].sort((a,b)=>a-b).forEach(n => {
+      const stepDef = cfg.steps.find(s => s.n === n);
+      const item = document.createElement("div");
+      item.className = "bar-legend-item";
+      item.innerHTML = '<span class="bar-legend-dot" style="background:' + STEP_COLORS[(n-1) % STEP_COLORS.length] + '"></span>' +
+        'Step ' + n + ' (' + stepDef.range + (stepDef.rate === 0 ? ", free" : ", " + fmtR(stepDef.rate) + "/kl") + ')';
+      legend.appendChild(item);
+    });
+  }
+
+  calcMultiBtn.addEventListener("click", runMultiCalculation);
+
+  resetMultiBtn.addEventListener("click", function(){
+    multiResultSection.style.display = "none";
+    document.getElementById("tab-multi").scrollIntoView({behavior:"smooth", block:"start"});
+  });
 
 })();
 </script>
