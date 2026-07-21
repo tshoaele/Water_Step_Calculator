@@ -49,6 +49,8 @@
     color: var(--ink);
     font-family: var(--sans);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   body{
@@ -821,7 +823,7 @@
     document.getElementById('month-summary').innerHTML = '<ul class="summary-list">' + summaryItems.map(item => `<li>${item}</li>`).join('') + '</ul>';
 
     // Table
-    const head = '<tr><th>Purchase</th><th>Amount</th><th>Net after fees</th><th>Effective rate</th><th>Kl this purchase</th><th>Cumulative kl</th><th>Steps used</th></tr>';
+    const head = '<thead><tr><th>Purchase</th><th>Amount</th><th>Net after fees</th><th>Effective rate</th><th>Kl this purchase</th><th>Cumulative kl</th><th>Steps used</th></tr></thead><tbody>';
     const rows = purchases.map(p => {
       const stepsUsed = p.result.breakdown.map(b => b.step).join(', ');
       return `<tr>
@@ -834,7 +836,7 @@
         <td data-label="Steps used">${stepsUsed || '&mdash;'}</td>
       </tr>`;
     }).join('');
-    document.getElementById('month-table').innerHTML = head + rows;
+    document.getElementById('month-table').innerHTML = head + rows + '</tbody>';
 
     // Bars
     const maxKl = Math.max(...purchases.map(p => p.result.kl), 0.001);
